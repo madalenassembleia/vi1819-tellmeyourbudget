@@ -30,7 +30,8 @@ function gen_vis() {
 	d3.json("world_dataset.json").then(function (error, topology) {
 		debugger;
     g.selectAll("path")
-
+      .data(topojson.feature(topology, topology.objects.countries)
+          .features)
       .enter()
       .append("path")
       .attr("d", path)
