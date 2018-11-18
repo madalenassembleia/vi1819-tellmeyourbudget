@@ -27,8 +27,7 @@ function gen_vis() {
 	    .projection(projection);
   
 	// load and display the World
-	d3.json("world_dataset.json").then(function (error, topology) {
-		debugger;
+	d3.json("world_dataset.json").then(function (topology) {
     g.selectAll("path")
       .data(topojson.feature(topology, topology.objects.countries)
           .features)
