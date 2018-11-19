@@ -1,4 +1,5 @@
 var dataset;
+var visited_countries;
 
 d3.json("travel_dataset.json").then(function (data) {
     dataset = data;
@@ -33,16 +34,14 @@ function gen_vis() {
           .features)
       .enter()
       .append("path")
-      .attr("d", path)
-      ;
-		g.selectAll('path')
-	    .attr('fill', colorCountry);
+      .attr("d", path);
+
 	});
 }
 
 // color country
 function colorCountry(country) {
-    if (visited_countries.includes(country.id)) {
+  if (visited_countries.includes(country.id)) {
         // hack to discolor ehtiopia
         if (country.id == '-99' & country.geometry.coordinates[0][0][0] != 20.590405904059054){
             return '#e7d8ad'    

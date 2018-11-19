@@ -1,6 +1,15 @@
 h1 { 
    font-size: 25pt;
    font-family: 'Allerta Stencil', sans-serif;
-   color: #5b7c84;
+   color: #7B9BA6;
    text-align: center;
+}
+
+path {
+	fill: #233656;
+}
+
+.map {
+    overflow: unset;
+    transform: scale(0.6, 0.5) translate(-515px, 0px);
 }
