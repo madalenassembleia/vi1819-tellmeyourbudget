@@ -6,11 +6,55 @@
     <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
     <script src="travel.js"></script>
-    <style>@import url('https://fonts.googleapis.com/css?family=Allerta+Stencil');</style>
+    <style>
+      @import url('https://fonts.googleapis.com/css?family=Allerta+Stencil');
+      @import url('https://fonts.googleapis.com/css?family=Muli|Open+Sans+Condensed:300');
+    </style>
   </head>
 
   <body>
     <h1>Tell Me Your Budget and I'll Tell You Where To Go</h1>
+    <form>
+      <div class="inputs-row">
+        <div>
+          <label for="number_of_nights">Number of Nights</label>
+          <input type="integer" name="number_of_nights" id="number-of-nights">
+        </div>
+        <div>
+          <label for="total_budget" class="total-budget-label">Total Budget</label>
+          <input type="integer" name="total_budget" id="total-budget">
+        </div>
+      </div>
+      <div class="inputs-row">
+        <div>
+          <label for="accomodation">Accomodation</label>
+          <input type="checkbox" name="accomodation" id="accomodation">
+        </div>
+        <div>
+          <label for="food">Food</label>
+          <input type="checkbox" name="food" id="food">
+        </div>
+        <div>
+          <label for="transportation">Transportation</label>
+          <input type="checkbox" name="transportation" id="transportation">
+        </div>
+      </div>
+      <div class="inputs-row">
+        <div>
+          <label for="culture">Culture</label>
+          <input type="checkbox" name="culture" id="culture">
+        </div>
+        <div>
+          <label for="alcohol">Alcohol</label>
+          <input type="checkbox" name="alcohol" id="alcohol">
+        </div>
+        <div>
+          <label for="shopping">Shopping</label>
+          <input type="checkbox" name="shopping" id="shopping">
+        </div>
+      </div>
+      <input type="submit" name="submit" class="submit-button">
+    </form>
     <div id="map"></div>
   </body>
 

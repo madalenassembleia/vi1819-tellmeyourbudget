@@ -23,20 +23,28 @@ function gen_vis() {
 	    .attr("height", height)
 	    .attr("class", "map");
 
+  var tooltip = d3.select("#map").append("div")
+      .attr("class", "tooltip");
+
 	var g = svg.append("g");
 	var path = d3.geoPath()
 	    .projection(projection);
 
-  Promise.all([
-  	json("world_dataset.json"),
-  	cvs("world_country_names.csv")]).
-  	then(function (topology) {
+  // parse the country files
+  var files = ["world_dataset.json", "world_country_names.csv"];
+  var promises = [];
+  promises.push(d3.json(files[0]));
+  promises.push(d3.csv(files[1]));
+
+  Promise.all(promises).then(function(values) {
+    var topology = values[0];
     g.selectAll("path")
       .data(topojson.feature(topology, topology.objects.countries)
           .features)
       .enter()
       .append("path")
-      .attr("d", path);
+      .attr("d", path)
+      ;
   });
 }
 
