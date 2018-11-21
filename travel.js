@@ -34,7 +34,7 @@ function gen_vis() {
   var files = ["world_dataset.json", "world_country_names.csv"];
   var promises = [];
   promises.push(d3.json(files[0]));
-  promises.push(d3.csv(files[1]));
+  names =promises.push(d3.csv(files[1]));
 
   Promise.all(promises).then(function(values) {
     var topology = values[0];
@@ -43,10 +43,33 @@ function gen_vis() {
           .features)
       .enter()
       .append("path")
-      .attr("d", path)
+      .attrs({
+        "d": path,
+        "fill": "white"
+        })
+      .on("mouseover",mouseOver)
+      .on("mousemove", mouseMove)
+      .on("mouseout", mouseOut)
+      //.atrr("fill", colorCountry)
       ;
   });
+
+function mouseOver(d,i){
+  d3.select(this).attr("fill","grey");
+    return tooltip.style("hidden", false).html(d.id);
 }
+function mouseMove(d){
+  tooltip.classed("hidden", false)
+         .style("top", (d3.event.pageY) + "px")
+         .style("left", (d3.event.pageX + 10) + "px")
+         .html(d.id);
+            }
+function mouseOut(d,i){
+  d3.select(this).attr("fill","white");
+  tooltip.classed("hidden", true);
+}
+}
+
 
 // color country
 function colorCountry(country) {
@@ -55,9 +78,13 @@ function colorCountry(country) {
         if (country.id == '-99' & country.geometry.coordinates[0][0][0] != 20.590405904059054){
             return '#e7d8ad'    
         } else {
-            return '#c8b98d';
+            return '#ffffff';
         };
     } else {
         return '#e7d8ad';
     }
 };
+
+
+
+
