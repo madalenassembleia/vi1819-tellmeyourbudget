@@ -48,7 +48,6 @@ function gen_vis() {
       return names.some(function(n) {
         if (d.id == n.id)  return d.name = n.name;
       })});
-
     g.selectAll("path")
       .data(topojson.feature(topology, topology.objects.countries)
           .features)
@@ -59,15 +58,15 @@ function gen_vis() {
         "fill": "white"
         })
       .on("mouseover",function(d,i){
-                debugger;
+        debugger;
                 d3.select(this).attr("fill","grey");
-                return tooltip.style("hidden", false).html(d.id);
+                return tooltip.style("hidden", false).html(countries[i].name);
             })
-            .on("mousemove",function(d){
+            .on("mousemove",function(d,i){
                 tooltip.classed("hidden", false)
                        .style("top", (d3.event.pageY) + "px")
                        .style("left", (d3.event.pageX + 10) + "px")
-                       .html(d.id);
+                       .html(countries[i].name);
             })
             .on("mouseout",function(d,i){
                 d3.select(this).attr("fill","white");
@@ -76,6 +75,7 @@ function gen_vis() {
       //.atrr("fill", colorCountry)
       ;
   });
+  debugger;
 }
 
 
