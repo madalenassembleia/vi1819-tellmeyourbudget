@@ -50,7 +50,6 @@ function gen_vis() {
         return d.name = n.name;
       }
     })});
-
     g.selectAll("path")
       .data(countries)
       .enter()
@@ -59,8 +58,9 @@ function gen_vis() {
       .on("mouseover",function(d,i){
                 d3.select(this).attr("fill","grey");
                 return tooltip.style("hidden", false).html(d.name);
+
             })
-            .on("mousemove",function(d){
+            .on("mousemove",function(d,i){
                 tooltip.classed("hidden", false)
                        .style("top", (d3.event.pageY) + "px")
                        .style("left", (d3.event.pageX + 10) + "px")
