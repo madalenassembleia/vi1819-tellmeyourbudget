@@ -7,6 +7,7 @@ d3.json("travel_dataset.json").then(function (data) {
 });
 
 function gen_vis() {
+  var selected_countries = [];
 	var width = window.innerWidth,
 	    height = window.innerHeight,
 	    centered,
@@ -56,7 +57,7 @@ function gen_vis() {
       .append("path")
       .attr("d", path)
       .on("mouseover",function(d,i){
-                d3.select(this).attr("fill","grey");
+                d3.select(this).classed('coutry_tooltip', true);
                 return tooltip.style("hidden", false).html(d.name);
 
             })
@@ -67,11 +68,28 @@ function gen_vis() {
                        .html(d.name);
             })
             .on("mouseout",function(d,i){
-                d3.select(this).attr("fill","white");
+                d3.select(this).classed('coutry_tooltip', false);
                 tooltip.classed("hidden", true);
-            });
+            })
+            .on('click', selected)
       ;
   });
+  function selected(d) {
+      if (selected_countries.includes(d.id) == false && selected_countries.length < 5){
+        d3.select(this).classed('active', true);
+        selected_countries.push(d.id);
+        return 
+      }
+      else if(selected_countries.includes(d.id) == true){
+        d3.select(this).classed('active', false);
+        var index = selected_countries.indexOf(d.id);
+        selected_countries.splice(index, 1);
+        return 
+      }
+      //debugger;
+      //d3.select('.acitve').classed('active', false);
+      return
+    }
 }
 
 
