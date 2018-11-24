@@ -39,10 +39,15 @@ label {
 }
 
 .active {
-    fill: #ffffff;
+    fill: #7AC5CD;
 }
 .hidden {
       display: none;
+}
+
+.coutry_tooltip{
+  fill: #4E78A0 ;
+  opacity: 0.9; 
 }
 .tooltip {
       color: #222; 
