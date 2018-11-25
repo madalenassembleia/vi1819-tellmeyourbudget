@@ -2,7 +2,7 @@ var dataset;
 var visited_countries;
 var pinnedCountries = false;
 
-d3.csv("dataset_top_cheapest.csv").then(function (data) {
+d3.csv("default_5_barChart.csv").then(function (data) {
     dataset = data;
     gen_vis();
     gen_graph(data);
@@ -16,9 +16,9 @@ function gen_vis() {
 	    clicked_point;
 
 	var projection = d3.geoNaturalEarth1()
-                   .center([0, 15]) 
+                   .center([0, 15])
                    .rotate([-9,0])
-                   .scale([1300/(2*Math.PI)]) 
+                   .scale([1300/(2*Math.PI)])
                    .translate([450,300]);
 
 	var plane_path = d3.geoPath()
@@ -45,7 +45,7 @@ function gen_vis() {
   Promise.all(promises).then(function(values) {
     var topology = values[0];
     var names = values[1];
-  
+
     var countries1 = topojson.feature(topology, topology.objects.countries).features;
     countries = countries1.filter(function(d) {
     return names.some(function(n) {
@@ -80,13 +80,13 @@ function gen_vis() {
     if (selected_countries.includes(d.id) == false && selected_countries.length < 5){
       d3.select(this).classed('active', true);
       selected_countries.push(d.id);
-      return 
+      return
     }
     else if(selected_countries.includes(d.id) == true){
       d3.select(this).classed('active', false);
       var index = selected_countries.indexOf(d.id);
       selected_countries.splice(index, 1);
-      return 
+      return
     }
     //debugger;
     //d3.select('.acitve').classed('active', false);
@@ -104,17 +104,15 @@ function gen_graph(data){
   if (!pinnedCountries){
     pinnedCountries = true;
       var yscale = d3.scaleLinear()
-                     .domain([d3.min([0,d3.min(data,function (d) { return d.Hostel })]),
-                              d3.max([0,d3.max(data,function (d) { return d.Hostel })])])
-                      .range([h-padding, padding]);
+                      .domain([0, 50])
+                      .rangeRound([h-padding, padding]);
 
-      var xscale = d3.scaleLinear()
-                      .domain([0,d3.max([0, d3.max(data,function (d) { return d.Country })])]) //errado
+      var xscale = d3.scaleBand()
+                      .domain(data.map(function(d){ return d.Country;})) // muito errado
                       .range([padding, w-padding]);
 
       var yaxis = d3.axisLeft()
-                    .scale(yscale)
-                    .ticks(5);
+                    .scale(yscale);
 
       //var bar_w = Math.floor(w/(data[1].length*2))-1;
 
@@ -132,16 +130,18 @@ function gen_graph(data){
           .attr("transform","translate(30,0)")
           .call(yaxis);
 
-      debugger;
+      //console.log(h-padding-yscale(d.Hostel));
+
+
       var bar = svg.append("g").attr("id", "GraphBars")
            .selectAll("rect")
                .data(data)
            .enter().append("rect")
-               .attr("width",Math.floor(w/(data.length))-1)
-               .attr("height", function(d){ return h-padding-yscale(d.Hostel);})
-               .attr("x", function(d,i){ return (padding + xscale(i));})
-               .attr("y", function(d){ return yscale(d.Hostel);})
-               .attr("fill","cyan");
+               .attr("width",Math.floor(w/((data.length+3)))-1) //21
+               .attr("height", function(d){ return h-yscale(parseInt(d.Hostel));})
+               .attr("x", function(d){ return (padding + xscale(d.Country));})
+               .attr("y", function(d){ return (-(padding) + yscale(parseInt(d.Hostel)));})
+               .attr("fill","#7AC5CD");
 
       svg.append("g")
             .attr("class", "xaxis")
@@ -154,5 +154,3 @@ function gen_graph(data){
   }
 
 }
-
-
