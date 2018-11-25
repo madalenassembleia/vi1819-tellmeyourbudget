@@ -59,3 +59,7 @@ label {
       opacity: 0.9; 
       position: absolute;
       }
+
+.ranked-graph {
+  transform: translate(650px, -100px);
+}
