@@ -3,9 +3,9 @@ var visited_countries;
 var pinnedCountries = false;
 
 d3.csv("default_5_barChart.csv").then(function (data) {
-    dataset = data;
-    gen_vis();
-    gen_graph(data);
+      dataset = data;
+      gen_vis();
+      gen_graph(data);
 });
 
 function gen_vis() {
@@ -76,6 +76,7 @@ function gen_vis() {
             .on('click', selected)
       ;
   });
+
   function selected(d) {
     if (selected_countries.includes(d.id) == false && selected_countries.length < 5){
       d3.select(this).classed('active', true);
@@ -96,11 +97,8 @@ function gen_vis() {
 
 function gen_graph(data){
 
-  debugger;
   var w = window.innerWidth/3, h = window.innerHeight/3;
   var padding = 20;
-  //var data=[1,2,3,4,5];
-  //var countries=[{"country":2014}, {"country":2015} ,{"country":2016},{"country":2017},{"country":2018}];
 
   if (!pinnedCountries){
     pinnedCountries = true;
@@ -109,7 +107,7 @@ function gen_graph(data){
                       .rangeRound([h-padding, padding]);
 
       var xscale = d3.scaleBand()
-                      .domain(data.map(function(d){ return d.Country;})) // muito errado
+                      .domain(data.map(function(d){ return d.Country;})) // muito certo omg
                       .range([padding, w-padding]);
 
       var yaxis = d3.axisLeft()
@@ -154,4 +152,8 @@ function gen_graph(data){
       //ir buscar paises do outro mapa
   }
 
+}
+function updatePinned(){
+  if(selected_countries.length<=1)
+    pinnedCountries = true;
 }
