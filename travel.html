@@ -6,7 +6,6 @@
     <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
-    <script src="travel.js"></script>
     <style>
       @import url('https://fonts.googleapis.com/css?family=Allerta+Stencil');
       @import url('https://fonts.googleapis.com/css?family=Muli|Open+Sans+Condensed:300');
@@ -15,49 +14,50 @@
 
   <body>
     <h1>Tell Me Your Budget and I'll Tell You Where To Go</h1>
-    <form>
+    <div class="form">
       <div class="inputs-row">
         <div>
           <label for="number_of_nights">Number of Nights</label>
-          <input type="integer" name="number_of_nights" id="number-of-nights">
+          <input type="integer" name="number_of_nights" id="form-number-of-nights">
         </div>
         <div>
           <label for="total_budget" class="total-budget-label">Total Budget</label>
-          <input type="integer" name="total_budget" id="total-budget">
+          <input type="integer" name="total_budget" id="form-total-budget">
         </div>
       </div>
       <div class="inputs-row">
         <div>
           <label for="accomodation">Accomodation</label>
-          <input type="checkbox" name="accomodation" id="accomodation">
+          <input type="checkbox" name="accomodation" id="form-accomodation">
         </div>
         <div>
           <label for="food">Food</label>
-          <input type="checkbox" name="food" id="food">
+          <input type="checkbox" name="food" id="form-food">
         </div>
         <div>
           <label for="transportation">Transportation</label>
-          <input type="checkbox" name="transportation" id="transportation">
+          <input type="checkbox" name="transportation" id="form-transportation">
         </div>
       </div>
       <div class="inputs-row">
         <div>
           <label for="culture">Culture</label>
-          <input type="checkbox" name="culture" id="culture">
+          <input type="checkbox" name="culture" id="form-culture">
         </div>
         <div>
           <label for="alcohol">Alcohol</label>
-          <input type="checkbox" name="alcohol" id="alcohol">
+          <input type="checkbox" name="alcohol" id="form-alcohol">
         </div>
         <div>
           <label for="shopping">Shopping</label>
-          <input type="checkbox" name="shopping" id="shopping">
+          <input type="checkbox" name="shopping" id="form-shopping">
         </div>
       </div>
-      <input type="submit" name="submit" class="submit-button">
-    </form>
+    </div>
     <div id="map"></div>
     <div class="tooltip"></div>
+    <script src="js/jquery/dist/jquery.min.js"></script>
+    <script src="js/travel.js"></script>
   </body>
 
 </html>

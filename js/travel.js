@@ -1,9 +1,10 @@
 var dataset;
 var visited_countries;
 
-d3.json("travel_dataset.json").then(function (data) {
+d3.csv("top_cheapest.csv").then(function (data) {
     dataset = data;
     gen_vis();
+    select_countries(data);
 });
 
 function gen_vis() {
@@ -92,4 +93,25 @@ function gen_vis() {
     }
 }
 
+function select_countries(data) {
+  $('input[id^="form"]').change(function() {
+    if($('#form-accomodation').is(':checked')) {
+    }
+    else if($('#form-food').is(':checked')) {
+      console.log("food");
+    }
+    else if($('#form-transportation').is(':checked')) {
+      console.log("transportation");
+    }
+    else if($('#form-culture').is(':checked')) {
+      console.log("culture");
 
+    }
+    else if($('#form-alcohol').is(':checked')) {
+      console.log("alcohol");
+    }
+    else if($('#form-shopping').is(':checked')) {
+      console.log("shopping");
+    }  
+  });
+}
