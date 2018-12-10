@@ -46,15 +46,14 @@ $(document).ready(function () {
             datamap.updateChoropleth(new_fills);
         });
 
-        
+
       }
   });
 
   d3.csv("top_cheapest_2.csv", function (data) {
-    debugger;
     $('input[id^="form"]').change(function() {
       if($('#form-accomodation').is(':checked')) {
-        var top_countries = data[0]; 
+        var top_countries = data[0];
 
 
       }
@@ -73,10 +72,12 @@ $(document).ready(function () {
       }
       else if($('#form-shopping').is(':checked')) {
         console.log("shopping");
-      }  
+      }
     });
   });
-}); 
+
+  genDotPlot();
+});
 /*
 var dataset;
 var visited_countries;
@@ -170,7 +171,7 @@ function gen_vis() {
       selected_countries.splice(index, 1);
       return
     }
-    //debugger;
+      //debugger;
     //d3.select('.acitve').classed('active', false);
     return
   }
@@ -195,7 +196,7 @@ function select_countries(data) {
     }
     else if($('#form-shopping').is(':checked')) {
       console.log("shopping");
-    }  
+    }
   });
 
 function gen_graph(data){
@@ -261,3 +262,267 @@ function updatePinned(){
     pinnedCountries = true;
 }
 */
+
+function genDotPlot(){
+
+  //setup
+
+  var fullwidth = 700, fullheight = 350;
+
+  // these are the margins around the graph. Axes labels go in margins.
+  var margin = {top: 20, right: 25, bottom: 20, left: 200};
+
+  var width = 1000 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+  margin.left= margin.left-90
+
+  var widthScale = d3.scale.linear()
+            .range([ 0, width]);
+
+  var heightScale = d3.scale.ordinal()
+            .rangeRoundBands([ margin.top, height], 0.2);
+
+  var xAxis = d3.svg.axis()
+          .scale(widthScale)
+          .orient("bottom");
+
+  var yAxis = d3.svg.axis()
+          .scale(heightScale)
+          .orient("left")
+          .innerTickSize([0]);
+
+  var svg = d3.select("#dotplot").append("svg")
+              .attr("width", fullwidth)
+              .attr("height", fullheight)
+              .attr("class", "dotplot");
+
+
+  d3.csv("nnr.csv", function(error, data) {
+
+    if (error) { console.log("error reading file"); }
+
+    data.sort(function(a, b) {
+      return d3.descending(+a.h2star, +b.h2star);
+    });
+
+
+    widthScale.domain([0, 60]);
+
+    // js map: array out of all the d.region fields
+    heightScale.domain(data.map(function(d) { return d.region; } ));
+
+    /*
+
+    var description = svg.selectAll("names")
+                       .data(data)
+                       .enter()
+                       .append("title");
+
+   description.text(function(d) {
+     return d.region[0];
+   });*/
+
+
+    // Make the faint lines from y labels to highest dot
+
+    var linesGrid = svg.selectAll("lines.grid")
+      .data(data)
+      .enter()
+      .append("line");
+
+    linesGrid.attr("class", "grid")
+      .attr("x1", margin.left)
+      .attr("y1", function(d) {
+        return heightScale(d.region) + heightScale.rangeBand()/2;
+      })
+      .attr("x2", function(d) {
+        return margin.left + widthScale(+d.h2star);
+
+      })
+      .attr("y2", function(d) {
+        return heightScale(d.region) + heightScale.rangeBand()/2;
+      });
+
+    // Make the dotted lines between the dots
+
+    var linesBetween = svg.selectAll("lines.between")
+      .data(data)
+      .enter()
+      .append("line");
+
+
+    linesBetween.attr("class", "between")
+      .attr("x1", function(d) {
+        return margin.left + widthScale(+d.yh1star);
+      })
+      .attr("y1", function(d) {
+        return heightScale(d.region) + heightScale.rangeBand()/2;
+      })
+      .attr("x2", function(d) {
+        return margin.left + widthScale(d.h2star);
+      })
+      .attr("y2", function(d) {
+        return heightScale(d.region) + heightScale.rangeBand()/2;
+      })
+      .attr("stroke-dasharray", "5,5")
+      .attr("stroke-width", "0.5");
+
+
+    // Make the dots for h1star
+
+    var dotsh1star = svg.selectAll("circle.h1star")
+        .data(data)
+        .enter()
+        .append("circle");
+
+    dotsh1star
+      .attr("class", "h1star")
+      .attr("cx", function(d) {
+        return margin.left + widthScale(+d.h1star);
+      })
+      .attr("r", heightScale.rangeBand()/5)
+      .attr("cy", function(d) {
+        return heightScale(d.region) + heightScale.rangeBand()/2;
+      })
+      .style("fill", function(d){
+        if (d.region === "World") {
+          return "#333399";
+        }
+      })
+      .append("title")
+      .text(function(d) {
+        return d.region + " in h1star: " + d.h1star + "%";
+      });
+
+    // Make the dots for h2star
+
+    var dotsh2star = svg.selectAll("circle.h2star")
+        .data(data)
+        .enter()
+        .append("circle");
+
+    dotsh2star
+      .attr("class", "h2star")
+      .attr("cx", function(d) {
+        return margin.left + widthScale(+d.h2star);
+      })
+      .attr("r", heightScale.rangeBand()/5)
+      .attr("cy", function(d) {
+        return heightScale(d.region) + heightScale.rangeBand()/2;
+      })
+      .style("fill", function(d){
+        if (d.region === "World") {
+          return "#CC0000";
+        }
+      })
+      .append("title")
+      .text(function(d) {
+        return d.region + " in h2star: " + d.h2star + "%";
+      });
+/*
+      // Make the dots for h3star
+
+      var dotsh2star = svg.selectAll("circle.h3star")
+          .data(data)
+          .enter()
+          .append("circle");
+
+      dotsh2star
+        .attr("class", "h3star")
+        .attr("cx", function(d) {
+          return margin.left + widthScale(+d.h2star);
+        })
+        .attr("r", heightScale.rangeBand()/2)
+        .attr("cy", function(d) {
+          return heightScale(d.region) + heightScale.rangeBand()/2;
+        })
+        .style("fill", function(d){
+          if (d.region === "World") {
+            return "#CC0000";
+          }
+        })
+        .append("title")
+        .text(function(d) {
+          return d.region + " in h3star: " + d.h3star + "%";
+        });
+
+
+        // Make the dots for h4star
+
+        var dotsh2star = svg.selectAll("circle.h4star")
+            .data(data)
+            .enter()
+            .append("circle");
+
+        dotsh2star
+          .attr("class", "h4star")
+          .attr("cx", function(d) {
+            return margin.left + widthScale(+d.h2star);
+          })
+          .attr("r", heightScale.rangeBand()/2)
+          .attr("cy", function(d) {
+            return heightScale(d.region) + heightScale.rangeBand()/2;
+          })
+          .style("fill", function(d){
+            if (d.region === "World") {
+              return "#CC0000";
+            }
+          })
+          .append("title")
+          .text(function(d) {
+            return d.region + " in h4star: " + d.h4star + "%";
+          });
+
+
+          // Make the dots for h5star
+
+          var dotsh2star = svg.selectAll("circle.h5star")
+              .data(data)
+              .enter()
+              .append("circle");
+
+          dotsh2star
+            .attr("class", "h5star")
+            .attr("cx", function(d) {
+              return margin.left + widthScale(+d.h5star);
+            })
+            .attr("r", heightScale.rangeBand()/2)
+            .attr("cy", function(d) {
+              return heightScale(d.region) + heightScale.rangeBand()/2;
+            })
+            .style("fill", function(d){
+              if (d.region === "World") {
+                return "#CC0000";
+              }
+            })
+            .append("title")
+            .text(function(d) {
+              return d.region + " in h5star: " + d.h5star + "%";
+            });
+
+*/
+      // add the axes
+
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + margin.left + "," + height + ")")
+      .call(xAxis);
+
+    svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + (margin.left) + ",-15)")
+      .call(yAxis);
+
+    svg.append("text")
+      .attr("class", "xlabel")
+      .attr("transform", "translate(" + (margin.left + width / 2) + " ," +
+            (height + margin.bottom) + ")")
+      .style("text-anchor", "middle")
+      .attr("dy", "12")
+      .text("Percent");
+
+  });
+
+
+}

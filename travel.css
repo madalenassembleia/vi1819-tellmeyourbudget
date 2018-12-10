@@ -38,7 +38,7 @@ h1 {
 .map {
   position: relative;
   height: 300px;
-  width: 100%; 
+  width: 100%;
 }
 
 .side-menu-form {
@@ -158,3 +158,87 @@ label {
     font-size: 11px;
 }
 */
+
+
+.dotplot {
+  transform: translate(800px, 0px);
+  background-color: white;
+}
+
+circle {
+				stroke-width: 1;
+}
+
+circle.h1star {
+	fill: #0000ff;
+}
+
+circle.h2star {
+	fill: #0011FF;
+}
+
+circle.3star {
+	fill: #FF0099;
+}
+
+circle.4star {
+	fill: #0099FF;
+}
+circle.5star {
+	fill: #FF0099;
+}
+
+circle.hostel {
+	fill: #eeeeee;
+}
+
+circle.mcdonalds {
+	fill: #FF0099;
+}
+
+circle.restaurant {
+	fill: #0099FF;
+}
+
+circle:hover {
+	opacity: .5;
+  fill: yellow;
+}
+
+line.grid {
+	stroke: #000000;
+  opacity: .2
+}
+
+/*line.between {
+	stroke: grey;
+}*/
+
+.axis path,
+.axis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.axis text {
+	font-family: 'Muli', sans-serif;
+	font-size: 11px;
+}
+
+.xlabel {
+	font-family: sans-serif;
+	font-size: 11px;
+	color: red;
+}
+
+div.text {
+  font-family: 'Muli', sans-serif;
+	color: black;
+	display: inline;
+}
+
+h3{
+	font-size: 17px;
+	transform: translate(1000px, 0px);
+}
