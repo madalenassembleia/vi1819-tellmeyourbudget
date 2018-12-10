@@ -1,3 +1,83 @@
+$(document).ready(function () {
+  var fills = {
+    'darkBlue': '#233656',
+    'blue': '#415b76',
+    'lightBlue': '#7b9ba6',
+    'grey': '#cdd6d5',
+    'white': '#eef4f2',
+    defaultFill: '#415b76'
+  }
+
+  selected_countries = [];
+
+  var map = new Datamap({
+        element: document.getElementById('map'),
+        fills: fills,
+        geographyConfig: {
+          borderColor: '#fff',
+          borderWidth: 0.2,
+          /*
+          highlightFillColor: '#233656',
+          highlightBorderColor: '#233656'*/
+          highlightOnHover: false
+        },
+        data: {
+        },
+        done: function (datamap) {
+          datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
+            var country_id = geography.id;
+            if (selected_countries.includes(country_id) === false && selected_countries.length < 5) {
+              var new_fills = {
+                [country_id] : {
+                  fillKey: 'lightBlue'
+                }
+              };
+              selected_countries.push(country_id);
+            }
+            else if (selected_countries.includes(country_id) === true) {
+              var new_fills = {
+                [country_id] : {
+                  fillKey: 'defaultFill'
+                }
+              };
+              var index = selected_countries.indexOf(country_id);
+              selected_countries.splice(index, 1);
+            }
+            datamap.updateChoropleth(new_fills);
+        });
+
+        
+      }
+  });
+
+  d3.csv("top_cheapest_2.csv", function (data) {
+    debugger;
+    $('input[id^="form"]').change(function() {
+      if($('#form-accomodation').is(':checked')) {
+        var top_countries = data[0]; 
+
+
+      }
+      else if($('#form-food').is(':checked')) {
+        console.log("food");
+      }
+      else if($('#form-transportation').is(':checked')) {
+        console.log("transportation");
+      }
+      else if($('#form-culture').is(':checked')) {
+        console.log("culture");
+
+      }
+      else if($('#form-alcohol').is(':checked')) {
+        console.log("alcohol");
+      }
+      else if($('#form-shopping').is(':checked')) {
+        console.log("shopping");
+      }  
+    });
+  });
+}); 
+/*
 var dataset;
 var visited_countries;
 var pinnedCountries = false;
@@ -180,3 +260,4 @@ function updatePinned(){
   if(selected_countries.length<=1)
     pinnedCountries = true;
 }
+*/

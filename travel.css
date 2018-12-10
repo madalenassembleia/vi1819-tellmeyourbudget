@@ -5,6 +5,76 @@ h1 {
    text-align: center;
 }
 
+.open-box {
+  width: 100%;
+}
+
+.open {
+  font-family: 'Open Sans Condensed';
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.first-row {
+  width: 100%;
+}
+
+.second-row {
+  width: 100%;
+}
+
+.first-row-first-column {
+  width: 50%;
+}
+
+.first-row-second-column {
+  width: 50%;
+}
+
+.second-row-first-column {}
+
+.second-row-second-column {}
+
+.map {
+  position: relative;
+  height: 300px;
+  width: 100%; 
+}
+
+.side-menu-form {
+  padding: 0px;
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #cdd6d5;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.side-menu-close-btn {
+  position: absolute;
+  top: 0;
+  right: 15px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.inputs-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-family: 'Open Sans Condensed';
+}
+
+
+
+
+/*
 path {
 	fill: #233656;
 }
@@ -87,3 +157,4 @@ label {
     font-family: sans-serif;
     font-size: 11px;
 }
+*/
