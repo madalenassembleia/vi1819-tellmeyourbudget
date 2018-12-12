@@ -112,6 +112,8 @@ $(document).ready(function () {
     }
   }
 
+  genBarChart();
+  genDotPlot();
 });
 /*
   d3.csv("top_cheapest_2.csv", function (data) {
@@ -143,10 +145,6 @@ $(document).ready(function () {
   /*d3.csv("top_cheapest.csv", function (data) {
       gen_graph(data);
   });*/
-  genBarChart();
-  genDotPlot();
-
-});
 
 /*
 /*
