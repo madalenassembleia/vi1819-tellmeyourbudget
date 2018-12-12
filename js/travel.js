@@ -8,7 +8,7 @@ $(document).ready(function () {
     defaultFill: '#415b76'
   }
 
-  selected_countries = [];
+  var selected_countries = [];
 
   var map = new Datamap({
         element: document.getElementById('map'),
@@ -45,11 +45,75 @@ $(document).ready(function () {
             }
             datamap.updateChoropleth(new_fills);
         });
-
-
       }
   });
+  d3.csv("top_cheapest_3.csv", function (data) {
+    $('#submit').on('click', function() {
+      var form_inputs = $("input[id^=form-]:checkbox:checked");
+      var row_id = [];
+      for(var i = 0; i < form_inputs.length; i++) {
+        row_id.push(form_inputs[i].name);
+      }
+      row_id.sort();
+      row_id = row_id.join('+');
 
+      var top;
+      for(var i = 0; i < data.length; i++) {
+        if (data[i].filter == row_id) {
+          top = data[i];
+          break;
+        }
+      }
+
+      resetChoropleth();
+      selected_countries = [];
+
+      top_1 = top.top_1.slice(1,4)
+      top_2 = top.top_2.slice(1,4)
+      top_3 = top.top_3.slice(1,4)
+      top_4 = top.top_4.slice(1,4)
+      top_5 = top.top_5.slice(1,4)
+
+      selected_countries = [top_1, top_2, top_3, top_4, top_5];
+
+      var fill = {
+        [top_1] : {
+          fillKey: 'lightBlue'
+        },
+        [top_2] : {
+          fillKey: 'lightBlue'
+        },
+        [top_3] : {
+          fillKey: 'lightBlue'
+        },
+        [top_4] : {
+          fillKey: 'lightBlue'
+        },
+        [top_5] : {
+          fillKey: 'lightBlue'
+        }
+      };
+      updateChoropleth(fill);
+    });
+  });
+
+  function updateChoropleth(new_fills) {
+    map.updateChoropleth(new_fills);
+  }
+
+  function resetChoropleth() {
+    for(var i = 0; i < selected_countries.length; i++) {
+      var fill = {
+        [selected_countries[i]] : {
+          fillKey: 'defaultFill'
+        }
+      };
+      updateChoropleth(fill);
+    }
+  }
+
+});
+/*
   d3.csv("top_cheapest_2.csv", function (data) {
     $('input[id^="form"]').change(function() {
       if($('#form-accomodation').is(':checked')) {
@@ -84,6 +148,7 @@ $(document).ready(function () {
 
 });
 
+/*
 /*
 var dataset;
 var visited_countries;

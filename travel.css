@@ -71,6 +71,12 @@ h1 {
   font-family: 'Open Sans Condensed';
 }
 
+.submit-btn {
+  width: 100%;
+  font-family: 'Open Sans Condensed';
+  padding: 10px 0;
+  font-size: 16px;
+}
 
 
 
