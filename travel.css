@@ -159,37 +159,31 @@ label {
 }
 */
 
-
-.dotplot {
-  transform: translate(800px, 0px);
-  background-color: white;
-}
-
 circle {
-				stroke-width: 1;
+	stroke-width: 1;
 }
 
 circle.h1star {
-	fill: #0000ff;
+	fill: #99BFCC;
 }
 
 circle.h2star {
-	fill: #0011FF;
+	fill: #7b9ba6;
 }
 
-circle.3star {
-	fill: #FF0099;
+circle.h3star {
+	fill: #415b76;
 }
 
-circle.4star {
-	fill: #0099FF;
+circle.h4star {
+	fill: #415b76;
 }
-circle.5star {
-	fill: #FF0099;
+circle.h5star {
+	fill: #233656;
 }
 
 circle.hostel {
-	fill: #eeeeee;
+	fill: #eef4f2;
 }
 
 circle.mcdonalds {
@@ -206,13 +200,14 @@ circle:hover {
 }
 
 line.grid {
-	stroke: #000000;
+	stroke: #111111;
   opacity: .2
 }
 
-/*line.between {
-	stroke: grey;
-}*/
+line.between {
+  stroke: #111111;
+  opacity: .2
+}
 
 .axis path,
 .axis line {
@@ -223,7 +218,7 @@ line.grid {
 
 .axis text {
 	font-family: 'Muli', sans-serif;
-	font-size: 11px;
+	font-size: 13px;
 }
 
 .xlabel {
@@ -238,7 +233,42 @@ div.text {
 	display: inline;
 }
 
-h3{
-	font-size: 17px;
-	transform: translate(1000px, 0px);
+.chart{
+  transform: translate(800px, -300px);
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: lightblue;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.tooltip {
+  position: absolute;
+  padding: 10px;
+  font: 12px sans-serif;
+  background: #222;
+  color: #fff;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0.9;
+  visibility: hidden;
 }
