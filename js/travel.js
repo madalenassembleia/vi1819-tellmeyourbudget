@@ -8,6 +8,7 @@ $(document).ready(function () {
     defaultFill: '#415b76'
   }
 
+
   var selected_countries = [];
 
   var map = new Datamap({
@@ -343,15 +344,33 @@ function genDotPlot(){
   //setup
 
   var fullwidth = 700, fullheight = 300;
-
-  // these are the margins around the graph. Axes labels go in margins.
   var margin = {top: 20, right: 25, bottom: 20, left: 200};
-
   var width = 1000 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
   margin.left= margin.left-90
 
+  d3.csv("nnr.csv", function(error, data) {
+
+    //filter
+  var actualValue = data;
+	var elements = Object.keys(data[0]).filter(function(d){
+
+        if (actualValue != "h1star" || "h2star" || "h3star" || "h4star" || "h5star"){
+          return ((d != "region") &&(d!="mcdonalds") && (d!="fancyrestaurant"));
+        }
+        else{
+          return ((d != "region")); //inc
+        }
+		});
+
+
+  console.log(elements);
+	var selection = elements[0];
+  console.log(elements[0]);
+
+
+ //scales
   var widthScale = d3.scale.linear()
             .range([ 0, width]);
 
@@ -374,21 +393,13 @@ function genDotPlot(){
               .attr("class", "dotplot");
 
 
-  d3.csv("nnr.csv", function(error, data) {
+
 
     if (error) { console.log("error reading file"); }
 
     data.sort(function(a, b) {
       return d3.descending(+a.h5star, +b.h5star);
     });
-
-
-    var selector = d3.select("#drop")
-                      .append("select")
-                      .attr("id","dropdown")
-                      .on("change", function(d){
-                        selection = document.getElementById("dropdown");});
-
 
     widthScale.domain([0, 60]); //mudar valor
 
@@ -458,7 +469,7 @@ function genDotPlot(){
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h1star: " + d.h1star + "€";
+        return d.region + " in h1star: " + d.h1star + "ï¿½";
       });
 
     // Make the dots for h2star
@@ -479,7 +490,7 @@ function genDotPlot(){
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h2star: " + d.h2star + "€";
+        return d.region + " in h2star: " + d.h2star + "ï¿½";
       });
 
       // Make the dots for h3star
@@ -500,7 +511,7 @@ function genDotPlot(){
         })
         .append("title")
         .text(function(d) {
-          return d.region + " in h3star: " + d.h3star + "€";
+          return d.region + " in h3star: " + d.h3star + "ï¿½";
         });
 
 
@@ -566,84 +577,123 @@ function genDotPlot(){
       .attr("dy", "12")
       .text("Percent");
 
-      var options=["Hotel", "Food"]
+      //var options=["Hotel", "Food"]
+
+      var selector = d3.select("#drop")
+                        .append("select")
+                        .attr("id","dropdown")
+                        .on("change", function(d){
+                          selection = document.getElementById("dropdown");});
+
+      heightScale.domain([0, d3.max(data, function(d){ return d[selection.value];})]);
+      yAxis.scale(heightScale);
+
+      d3.selectAll(".circle")
+        .transition()
+        .attr("cx", function(d) {
+          return margin.left + widthScale(+d.h5star);
+        })
+        .attr("r", heightScale.rangeBand()/9)
+        .attr("cy", function(d) {
+          return heightScale(d.region) + heightScale.rangeBand()/4;
+        });
+
+        d3.selectAll("g.y.axis")
+          .transition()
+          .call(yAxis);
 
       selector.selectAll("option")
-              .data(options)
+              .data(elements)
               .enter().append("option")
-              .attr("value", function(d,i){ return options[i]; })
-              .text(function(d,i){ return options[i]; })
-  });
+              .attr("value", function(d,i){ actualValue=d;   console.log(elements[i]); return d; })
+              .text(function(d){ return d;
+              })
+       });
 
 }
 
 //BARCHART
+
+var cList=[60,220,340,150];
+
 function genBarChart(){
 d3.csv("default_5_barChart.csv", function(data) {
 
   ///////////////////////
   // Chart Size Setup
 
-  var c=4;
   var margin = { top: 35, right: 0, bottom: 30, left: 40 };
 
   var width = 700 - margin.left - margin.right;
   var height = 400 - margin.top - margin.bottom;
 
 
-  var chart = d3.select(".chart")
-      .attr("width", width)
-      .attr("height", height)
+  var chart = d3.select("#barchart").selectAll(".bar").data(cList)
+                .style("height", function(d){ return d; })
+                .style("margin-top", function(d){
+      return height - d;
+    });
 
 
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    ///////////////////////
+    // Scales
+    var x = d3.scale.ordinal()
+        .domain(data.map(function(d) { return d['Country']; }))
+        .rangeRoundBands([0, width], .1);
 
-  ///////////////////////
-  // Scales
-  var x = d3.scale.ordinal()
-      .domain(data.map(function(d) { return d['Country']; }))
-      .rangeRoundBands([0, width], .1);
+    var y = d3.scale.linear()
+        .domain([0, d3.max(data, function(d) {return d['Hostel']; }) * 1.1])
+        .range([(height/1.5), 0]);
 
-  var y = d3.scale.linear()
-      .domain([0, d3.max(data, function(d) {return d['Hostel']; }) * 1.1])
-      .range([(height/1.5), 0]);
+    ///////////////////////
+    // Axis
 
-  ///////////////////////
-  // Axis
-  countries=[]
-  var countrieSelected = countries.length;
-  console.log(countries.length);
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
 
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
 
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left");
+    chart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + (height/1.5) + ")")
+        .call(xAxis);
 
-  chart.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + (height/1.5) + ")")
-      .call(xAxis);
+    chart.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
 
-  chart.append("g")
-      .attr("class", "y axis")
-      .call(yAxis);
+    ///////////////////////
+    // Title
+    chart.append("text")
+      .text('Bar Chart!')
+      .attr("text-anchor", "middle")
+      .attr("class", "graph-title")
+      .attr("y", -10)
+      .attr("x", width / 2.0);
 
-  ///////////////////////
-  // Title
-  chart.append("text")
-    .text('Bar Chart!')
-    .attr("text-anchor", "middle")
-    .attr("class", "graph-title")
-    .attr("y", -10)
-    .attr("x", width / 2.0);
+//  chart.append("g")
+//       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+  chart.enter()
+       .append("div").attr("class","bar")
+       .style("width", x.rangeBand())
+       .style("height", function(d){return d;})
+       .on("click", function(e, i){
+         cList.splice(i,1);
+         genBarChart();});
+
+  chart.exit().remove();
+
+  d3.select("#dataset").text(cList);
+
 
   ///////////////////////
   // Bars
-  var bar = chart.selectAll(".bar")
+  /*var bar = chart.selectAll(".bar")
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
@@ -656,14 +706,14 @@ d3.csv("default_5_barChart.csv", function(data) {
       .duration(1500)
       .ease("elastic")
       .attr("y", function(d) {return parseFloat(d['Hostel']); })
-      .attr("height", function(d) {return (height/1.5) - parseFloat(d['Hostel']); })
+      .attr("height", function(d) {return (height/1.5) - parseFloat(d['Hostel']); })*/
 
   ///////////////////////
   // Tooltips
   var tooltip = d3.select("body").append("div")
       .attr("class", "tooltip");
 
-  bar.on("mouseover", function(d) {
+  /*bar.on("mouseover", function(d) {
         tooltip.html(d['value'])
             .style("visibility", "visible");
       })
@@ -673,6 +723,15 @@ d3.csv("default_5_barChart.csv", function(data) {
       })
       .on("mouseout", function(d) {
         tooltip.style("visibility", "hidden");
-      });
+      });*/
+});
+
+d3.select("#add-btn").on("click", function(e){
+
+	if (cList.length < 5) cList.push(Math.round(Math.random() * 100)); //mete numero random para ja
+  console.log(cList);
+  //console.log(selected_countries);
+	genBarChart();
+
 });
 }
