@@ -47,7 +47,7 @@ $(document).ready(function () {
         });
       }
   });
-  d3.csv("top_cheapest_3.csv", function (data) {
+  d3.csv("top_cheapest.csv", function (data) {
     $('#submit').on('click', function() {
       var form_inputs = $("input[id^=form-]:checkbox:checked");
       var row_id = [];
