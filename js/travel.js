@@ -339,6 +339,9 @@ function updatePinned(){
 }
 */
 
+var actualValue = "Food";
+
+
 function genDotPlot(){
 
   //setup
@@ -348,28 +351,24 @@ function genDotPlot(){
   var width = 1000 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-  margin.left= margin.left-90
+  margin.left = margin.left - 90;
 
   d3.csv("nnr.csv", function(error, data) {
 
-    //filter
-  var actualValue = data;
+  var options = ["Hotel", "Food"];
+
+  //filter
 	var elements = Object.keys(data[0]).filter(function(d){
 
-        if (actualValue != "h1star" || "h2star" || "h3star" || "h4star" || "h5star"){
+        if (actualValue == "Hotel"){
           return ((d != "region") &&(d!="mcdonalds") && (d!="fancyrestaurant"));
         }
         else{
-          return ((d != "region")); //inc
+          return ((d != "region") && (d != "h1star")&& (d != "h2star")&& (d != "h3star")&& (d != "h4star") && (d != "h5star")); //inc
         }
 		});
 
-
-  console.log(elements);
-	var selection = elements[0];
-  console.log(elements[0]);
-
-
+    selection = elements[0];
  //scales
   var widthScale = d3.scale.linear()
             .range([ 0, width]);
@@ -391,8 +390,6 @@ function genDotPlot(){
               .attr("width", fullwidth)
               .attr("height", fullheight)
               .attr("class", "dotplot");
-
-
 
 
     if (error) { console.log("error reading file"); }
@@ -465,11 +462,11 @@ function genDotPlot(){
       })
       .attr("r", heightScale.rangeBand()/9)
       .attr("cy", function(d) {
-        return heightScale(d.region) + heightScale.rangeBand()/4;
+          return heightScale(d.region) + heightScale.rangeBand()/4;
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h1star: " + d.h1star + "�";
+        return d.region + " in h1star: " + d.h1star + "€";
       });
 
     // Make the dots for h2star
@@ -585,8 +582,8 @@ function genDotPlot(){
                         .on("change", function(d){
                           selection = document.getElementById("dropdown");});
 
-      heightScale.domain([0, d3.max(data, function(d){ return d[selection.value];})]);
-      yAxis.scale(heightScale);
+      //heightScale.domain([0, d3.max(data, function(d){ d.h1star;})]);
+      //yAxis.scale(heightScale);
 
       d3.selectAll(".circle")
         .transition()
@@ -603,12 +600,13 @@ function genDotPlot(){
           .call(yAxis);
 
       selector.selectAll("option")
-              .data(elements)
+              .data(options)
               .enter().append("option")
-              .attr("value", function(d,i){ actualValue=d;   console.log(elements[i]); return d; })
+              .attr("value", function(d,i){ actualValue=d; return d; })
               .text(function(d){ return d;
               })
        });
+
 
 }
 
