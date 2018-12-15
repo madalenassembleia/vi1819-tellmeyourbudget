@@ -15,12 +15,18 @@ h1 {
   cursor: pointer;
 }
 
+.container {
+  display: block;
+}
+
 .first-row {
   width: 100%;
+  display: flex;
 }
 
 .second-row {
   width: 100%;
+  display: flex;
 }
 
 .first-row-first-column {
