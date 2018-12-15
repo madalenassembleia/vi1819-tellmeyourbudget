@@ -612,18 +612,20 @@ function genDotPlot(){
 
 //BARCHART
 
-var cList=[60,220,340,150];
 
 function genBarChart(){
   d3.csv("total_costs.csv", function(data) {
     debugger;
 
+    //for(var i = 0; i < 5; i++) {
+    //  selected_countries[i]
+    //}
     var margin = { top: 35, right: 0, bottom: 30, left: 40 };
 
     var width = 700 - margin.left - margin.right;
     var height = 400 - margin.top - margin.bottom;
 
-    var chart = d3.select("#barchart").selectAll(".bar").data(cList)
+    var chart = d3.select("#barchart").selectAll(".bar").data(selected_countries.map)
                   .style("height", function(d){ return d; })
                   .style("margin-top", function(d){
         return height - d;
