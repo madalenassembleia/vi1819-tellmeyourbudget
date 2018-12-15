@@ -342,8 +342,6 @@ function updatePinned(){
 
 function genDotPlot(){
 
-  //setup
-
   var fullwidth = 700, fullheight = 300;
   var margin = {top: 20, right: 25, bottom: 20, left: 200};
   var width = 1000 - margin.left - margin.right,
@@ -618,98 +616,95 @@ function genDotPlot(){
 var cList=[60,220,340,150];
 
 function genBarChart(){
-d3.csv("default_5_barChart.csv", function(data) {
+  d3.csv("total_costs.csv", function(data) {
+    debugger;
 
-  ///////////////////////
-  // Chart Size Setup
+    var margin = { top: 35, right: 0, bottom: 30, left: 40 };
 
-  var margin = { top: 35, right: 0, bottom: 30, left: 40 };
+    var width = 700 - margin.left - margin.right;
+    var height = 400 - margin.top - margin.bottom;
 
-  var width = 700 - margin.left - margin.right;
-  var height = 400 - margin.top - margin.bottom;
+    var chart = d3.select("#barchart").selectAll(".bar").data(cList)
+                  .style("height", function(d){ return d; })
+                  .style("margin-top", function(d){
+        return height - d;
+      });
 
 
-  var chart = d3.select("#barchart").selectAll(".bar").data(cList)
-                .style("height", function(d){ return d; })
-                .style("margin-top", function(d){
-      return height - d;
-    });
+      ///////////////////////
+      // Scales
+      var x = d3.scale.ordinal()
+          .domain(data.map(function(d) { return d['Country']; }))
+          .rangeRoundBands([0, width], .1);
+
+      var y = d3.scale.linear()
+          .domain([0, d3.max(data, function(d) {return d['Hostel']; }) * 1.1])
+          .range([(height/1.5), 0]);
+
+      ///////////////////////
+      // Axis
+
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom");
+
+      var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient("left");
+
+      chart.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (height/1.5) + ")")
+          .call(xAxis);
+
+      chart.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+
+      ///////////////////////
+      // Title
+      chart.append("text")
+        .text('Bar Chart!')
+        .attr("text-anchor", "middle")
+        .attr("class", "graph-title")
+        .attr("y", -10)
+        .attr("x", width / 2.0);
+
+  //  chart.append("g")
+  //       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    chart.enter()
+         .append("div").attr("class","bar")
+         .style("width", x.rangeBand())
+         .style("height", function(d){return d;})
+         .on("click", function(e, i){
+           cList.splice(i,1);
+           genBarChart();});
+
+    chart.exit().remove();
+
+    d3.select("#dataset").text(cList);
 
 
     ///////////////////////
-    // Scales
-    var x = d3.scale.ordinal()
-        .domain(data.map(function(d) { return d['Country']; }))
-        .rangeRoundBands([0, width], .1);
+    // Bars
+    /*var bar = chart.selectAll(".bar")
+        .data(data)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) {return x(d['Country']); })
+        .attr("y", height)
+        .attr("width", x.rangeBand())
+        .attr("height", 0);
 
-    var y = d3.scale.linear()
-        .domain([0, d3.max(data, function(d) {return d['Hostel']; }) * 1.1])
-        .range([(height/1.5), 0]);
-
-    ///////////////////////
-    // Axis
-
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
-
-    chart.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + (height/1.5) + ")")
-        .call(xAxis);
-
-    chart.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+    bar.transition()
+        .duration(1500)
+        .ease("elastic")
+        .attr("y", function(d) {return parseFloat(d['Hostel']); })
+        .attr("height", function(d) {return (height/1.5) - parseFloat(d['Hostel']); })*/
 
     ///////////////////////
-    // Title
-    chart.append("text")
-      .text('Bar Chart!')
-      .attr("text-anchor", "middle")
-      .attr("class", "graph-title")
-      .attr("y", -10)
-      .attr("x", width / 2.0);
-
-//  chart.append("g")
-//       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-  chart.enter()
-       .append("div").attr("class","bar")
-       .style("width", x.rangeBand())
-       .style("height", function(d){return d;})
-       .on("click", function(e, i){
-         cList.splice(i,1);
-         genBarChart();});
-
-  chart.exit().remove();
-
-  d3.select("#dataset").text(cList);
-
-
-  ///////////////////////
-  // Bars
-  /*var bar = chart.selectAll(".bar")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) {return x(d['Country']); })
-      .attr("y", height)
-      .attr("width", x.rangeBand())
-      .attr("height", 0);
-
-  bar.transition()
-      .duration(1500)
-      .ease("elastic")
-      .attr("y", function(d) {return parseFloat(d['Hostel']); })
-      .attr("height", function(d) {return (height/1.5) - parseFloat(d['Hostel']); })*/
-
-  ///////////////////////
   // Tooltips
   var tooltip = d3.select("body").append("div")
       .attr("class", "tooltip");
