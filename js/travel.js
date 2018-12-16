@@ -140,7 +140,6 @@ $(document).ready(function () {
   genFloatingBar("PRT");
 
   genDotPlot(selected_countries,selectorDot);
-  genFloatingBarSelector(selected_countries);
   genFloatingBar();
 
 });
