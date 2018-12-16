@@ -808,7 +808,7 @@ function genBarChart(selected_countries){
     ///////////////////////
     // Scales
     var x = d3.scale.ordinal()
-        .domain(data.map(function(d) {debugger; return d['Country']; }))
+        .domain(data.map(function(d) {return d['Country']; }))
         .rangeRoundBands([0, width], .1);
 
     var y = d3.scale.linear()
@@ -957,8 +957,8 @@ function genBarChart(selected_countries){
       bar.transition()
           .duration(1500)
           .ease("elastic")
-          .attr("y", function(d) {return height - parseFloat(d['Hostel']); })
-          .attr("height", function(d) {return parseFloat(d['Hostel']); })
+          .attr("y", function(d) {return height - parseFloat(d['total_average']); })
+          .attr("height", function(d) {return parseFloat(d['total_average']); })
 
       ///////////////////////
       // Tooltips
