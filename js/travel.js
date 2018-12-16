@@ -109,6 +109,10 @@ $(document).ready(function () {
         }
       };
       updateChoropleth(fill);
+      d3.select(".chart").select("svg").remove();
+      genBarChart(selected_countries);
+      d3.select("#dotplot").select("svg").remove();
+      genDotPlot(selected_countries,selectorDot);
     });
   });
 
