@@ -34,6 +34,7 @@ $(document).ready(function () {
                 }
               };
               selected_countries.push(country_id);
+              $("#dropdownFloating").append(new Option(geography.properties.name, country_id));
             }
             else if (selected_countries.includes(country_id) === true) {
               var new_fills = {
@@ -43,6 +44,7 @@ $(document).ready(function () {
               };
               var index = selected_countries.indexOf(country_id);
               selected_countries.splice(index, 1);
+              //$('#dropdownFloating option[value="${country_id}"]').remove();
             }
             datamap.updateChoropleth(new_fills);
         });
@@ -113,8 +115,19 @@ $(document).ready(function () {
     }
   }
 
-  genBarChart(selected_countries);
+
+  var selector = d3.select("#dropFloatBar")
+                    .append("select")
+                    .attr("id","dropdownFloating")
+                    .on("change", function(d){
+                      d3.select("#dropFloatBar").select("svg").remove();
+                      genFloatingBar(selected_countries);
+                    });
+
+  genBarChart();
+
   genDotPlot();
+  genFloatingBarSelector(selected_countries);
   genFloatingBar();
 });
 /*
@@ -340,6 +353,9 @@ function updatePinned(){
 }
 */
 
+var optionValue = "Hotel";
+
+
 function genDotPlot(){
 
   var fullwidth = 700, fullheight = 300;
@@ -347,31 +363,29 @@ function genDotPlot(){
   var width = 1000 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-  margin.left= margin.left-90
+  margin.left = margin.left - 90;
 
-  d3.csv("nnr.csv", function(error, data) {
+  d3.csv("accommodation_food_costs.csv", function(error, data) {
 
-    //filter
-  var actualValue = data;
+  var options = ["Hotel", "Food"];
+
+  //filter
+  console.log(Object.keys(data[0]))
 	var elements = Object.keys(data[0]).filter(function(d){
-
-        if (actualValue != "h1star" || "h2star" || "h3star" || "h4star" || "h5star"){
-          return ((d != "region") &&(d!="mcdonalds") && (d!="fancyrestaurant"));
+        if (optionValue == "Hotel"){
+          return ((d != "id") &&(d!="Country") &&(d!="food") && (d!="food_expensive"));
         }
         else{
-          return ((d != "region")); //inc
+          return ((d!="id") && (d != "region")  &&(d!="Country") && (d != "accomodation")&& (d != "accomodation_1")&& (d != "accomodation_2")&& (d != "accomodation_3") && (d != "accomodation_4")  &&(d!="accomodation_5")); //inc
         }
 		});
 
-
-  console.log(elements);
-	var selection = elements[0];
-  console.log(elements[0]);
-
+    console.log("elements: ", elements)
+    var selection = elements[0];
 
  //scales
   var widthScale = d3.scale.linear()
-            .range([ 0, width]);
+            .range([ 0, width/1.3]);
 
   var heightScale = d3.scale.ordinal()
             .rangeRoundBands([margin.top, (height/1.5)], 0.2);
@@ -392,18 +406,20 @@ function genDotPlot(){
               .attr("class", "dotplot");
 
 
-
-
     if (error) { console.log("error reading file"); }
 
     data.sort(function(a, b) {
-      return d3.descending(+a.h5star, +b.h5star);
+      return d3.descending(+a[elements[elements.length - 1]], +b[elements[elements.length - 1]]);
     });
 
-    widthScale.domain([0, 60]); //mudar valor
+    var max = d3.max(data, d => d[elements[elements.length - 1]]*1);
+    console.log("max", max)
+
+
+    widthScale.domain([0, max*1.3]); //mudar valor
 
     // js map: array out of all the d.region fields
-    heightScale.domain(data.map(function(d) { return d.region; } ));
+    heightScale.domain(data.map(function(d) { return d.Country; } ));
 
     // Make the faint lines from y labels to highest dot
 
@@ -415,14 +431,14 @@ function genDotPlot(){
     linesGrid.attr("class", "grid")
       .attr("x1", margin.left)
       .attr("y1", function(d) {
-        return heightScale(d.region) + heightScale.rangeBand()/4;
+        return heightScale(d.Country) + heightScale.rangeBand()/4;
       })
       .attr("x2", function(d) {
-        return margin.left + widthScale(+d.h1star);
+        return margin.left + widthScale(+d[elements[0]]);
 
       })
       .attr("y2", function(d) {
-        return heightScale(d.region) + heightScale.rangeBand()/4;
+        return heightScale(d.Country) + heightScale.rangeBand()/4;
       });
 
     // Make the dotted lines between the dots
@@ -435,44 +451,83 @@ function genDotPlot(){
 
     linesBetween.attr("class", "between")
       .attr("x1", function(d) {
-        return margin.left + widthScale(+d.h1star);
+        return margin.left + widthScale(+d[elements[0]]);
       })
       .attr("y1", function(d) {
-        return heightScale(d.region) + heightScale.rangeBand()/4;
+        return heightScale(d.Country) + heightScale.rangeBand()/4;
       })
       .attr("x2", function(d) {
-        return margin.left + widthScale(d.h5star);
+        return margin.left + widthScale(d[elements[elements.length - 1]]);
       })
       .attr("y2", function(d) {
-        return heightScale(d.region) + heightScale.rangeBand()/4;
+        return heightScale(d.Country) + heightScale.rangeBand()/4;
       })
       .attr("stroke-dasharray", "5,5")
       .attr("stroke-width", "0.5");
 
 
-    // Make the dots for h1star
-
-    var dotsh1star = svg.selectAll("circle.h1star")
+    // Make the dots for hostel
+    var dotshostel = svg.selectAll("circle.hostel")
         .data(data)
         .enter()
         .append("circle");
 
-    dotsh1star
-      .attr("class", "h1star")
+    dotshostel
+      .attr("class", "hostel")
       .attr("cx", function(d) {
-        return margin.left + widthScale(+d.h1star);
+        return margin.left + widthScale(+d[elements[0]]);
       })
-      .attr("r", heightScale.rangeBand()/9)
+      .attr("r", function(d){
+        if (+d[elements[0]] == "0"){
+          $("hostel").css("opacity", "0.0");
+        }
+        else{
+          $("hostel").css("opacity", "1.0");
+        }
+          return heightScale.rangeBand()/9;
+      })
       .attr("cy", function(d) {
-        return heightScale(d.region) + heightScale.rangeBand()/4;
+          return heightScale(d.Country) + heightScale.rangeBand()/4;
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h1star: " + d.h1star + "€";
+        return d.region + " in h1star: " + d.h1star + "ï¿½";
       });
 
-    // Make the dots for h2star
 
+      // Make the dots for h1star
+
+      var dotsh1star = svg.selectAll("circle.h1star")
+          .data(data)
+          .enter()
+          .append("circle");
+
+      dotsh1star
+        .attr("class", "h1star")
+        .attr("cx", function(d) {
+          return margin.left + widthScale(+d[elements[1]]);
+        })
+        .attr("r", function(d,i){
+          if (+d[elements[1]] == "0"){
+            $("circle.hostel").css("opacity", "0.0");
+          }
+          else{
+            $("circle.hostel").css("opacity", "1.0");
+          }
+            return heightScale.rangeBand()/9;
+        })
+        .attr("cy", function(d) {
+            return heightScale(d.Country) + heightScale.rangeBand()/4;
+        })
+        .append("title")
+        .text(function(d) {
+          return d.Country + " in h1star: " + d[elements[1]] + "â‚¬";
+        });
+
+
+if (optionValue == "Hotel"){
+
+  // Make the dots for h2star
     var dotsh2star = svg.selectAll("circle.h2star")
         .data(data)
         .enter()
@@ -481,15 +536,23 @@ function genDotPlot(){
     dotsh2star
       .attr("class", "h2star")
       .attr("cx", function(d) {
-        return margin.left + widthScale(+d.h2star);
+        return margin.left + widthScale(+d[elements[2]]);
       })
-      .attr("r", heightScale.rangeBand()/9)
+      .attr("r", function(d,i){
+        if (+d[elements[2]] == "0"){
+          $("circle.hostel").css("opacity", "0.0");
+        }
+        else{
+          $("circle.hostel").css("opacity", "1.0");
+        }
+          return heightScale.rangeBand()/9;
+      })
       .attr("cy", function(d) {
-        return heightScale(d.region) + heightScale.rangeBand()/4;
+        return heightScale(d.Country) + heightScale.rangeBand()/4;
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h2star: " + d.h2star + "€";
+        return d.region + " in h2star: " + d.h2star + "ï¿½";
       });
 
       // Make the dots for h3star
@@ -502,15 +565,23 @@ function genDotPlot(){
       dotsh3star
         .attr("class", "h3star")
         .attr("cx", function(d) {
-          return margin.left + widthScale(+d.h3star);
+          return margin.left + widthScale(+d[elements[3]]);
         })
-        .attr("r", heightScale.rangeBand()/9)
+        .attr("r", function(d,i){
+          if (+d[elements[3]] == "0"){
+            $("circle.hostel").css("opacity", "0.0");
+          }
+          else{
+            $("circle.hostel").css("opacity", "1.0");
+          }
+            return heightScale.rangeBand()/9;
+        })
         .attr("cy", function(d) {
-          return heightScale(d.region) + heightScale.rangeBand()/4;
+          return heightScale(d.Country) + heightScale.rangeBand()/4;
         })
         .append("title")
         .text(function(d) {
-          return d.region + " in h3star: " + d.h3star + "€";
+          return d.region + " in h3star: " + d.h3star + "ï¿½";
         });
 
 
@@ -523,15 +594,23 @@ function genDotPlot(){
 
   dotsh4star.attr("class", "h4star")
             .attr("cx", function(d) {
-                    return margin.left + widthScale(+d.h4star);
+                    return margin.left + widthScale(+d[elements[4]]);
                   })
-            .attr("r", heightScale.rangeBand()/9)
+                  .attr("r", function(d,i){
+                    if (+d[elements[4]] == "0"){
+                      $("circle.h4star").css("opacity", "0.0");
+                    }
+                    else{
+                      $("circle.h4star").css("opacity", "1.0");
+                    }
+                      return heightScale.rangeBand()/9;
+                  })
             .attr("cy", function(d) {
-                    return heightScale(d.region) + heightScale.rangeBand()/4;
+                    return heightScale(d.Country) + heightScale.rangeBand()/4;
                   })
             .append("title")
             .text(function(d) {
-                    return d.region + " in h4star: " + d.h4star + "€";
+                    return d.region + " in h4star: " + d.h4star + "ï¿½";
                   });
 
 
@@ -545,17 +624,26 @@ function genDotPlot(){
     dotsh5star
       .attr("class", "h5star")
       .attr("cx", function(d) {
-        return margin.left + widthScale(+d.h5star);
+        return margin.left + widthScale(+d[elements[5]]);
       })
-      .attr("r", heightScale.rangeBand()/9)
+      .attr("r", function(d){
+        if (+d[elements[5]] == "0"){
+          $("circle.h5star").css("opacity", "0.0");
+        }
+        else{
+          $("circle.h5star").css("opacity", "1.0");
+        }
+          return heightScale.rangeBand()/9;
+      })
       .attr("cy", function(d) {
-        return heightScale(d.region) + heightScale.rangeBand()/4;
+        return heightScale(d.Country) + heightScale.rangeBand()/4;
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h5star: " + d.h5star + "€";
+        return d.region + " in h5star: " + d.h5star + "ï¿½";
       });
 
+  }
       // add the axes
 
     svg.append("g")
@@ -582,34 +670,53 @@ function genDotPlot(){
                         .append("select")
                         .attr("id","dropdown")
                         .on("change", function(d){
-                          selection = document.getElementById("dropdown");});
+                          optionValue = (document.getElementById("dropdown")).value;
+                          console.log(optionValue)
 
-      heightScale.domain([0, d3.max(data, function(d){ return d[selection.value];})]);
-      yAxis.scale(heightScale);
 
-      d3.selectAll(".circle")
+      console.log("New Elements: ",elements)
+      elements = Object.keys(data[0]).filter(function(d){
+            if (optionValue == "Hotel"){
+              return ((d != "id") &&(d!="Country") &&(d!="food") && (d!="food_expensive"));
+            }
+            else{
+              return ((d!="id") && (d != "region")  &&(d!="Country") && (d != "accomodation")&& (d != "accomodation_1")&& (d != "accomodation_2")&& (d != "accomodation_3") && (d != "accomodation_4")  &&(d!="accomodation_5")); //inc
+            }
+    		});
+
+
+      max = d3.max(data, d => d[elements[elements.length - 1]]*1);
+      console.log(" new max", max)
+
+      widthScale.domain([0, max*1.3]); //mudar valor
+
+      //heightScale.domain(data.map(function(d) { return d.Country; } ));
+      //yAxis.scale(heightScale);
+
+      d3.selectAll("circle")
         .transition()
         .attr("cx", function(d) {
-          return margin.left + widthScale(+d.h5star);
+          return margin.left + widthScale(+d[elements[elements.length - 1]]);
         })
         .attr("r", heightScale.rangeBand()/9)
         .attr("cy", function(d) {
-          return heightScale(d.region) + heightScale.rangeBand()/4;
+          return heightScale(d.Country) + heightScale.rangeBand()/4;
         });
 
         d3.selectAll("g.y.axis")
           .transition()
           .call(yAxis);
 
+      });
       selector.selectAll("option")
-              .data(elements)
+              .data(options)
               .enter().append("option")
-              .attr("value", function(d,i){ actualValue=d;   console.log(elements[i]); return d; })
+              .attr("value", function(d){return d; })
               .text(function(d){ return d;
               })
        });
-
 }
+
 
 
 
@@ -716,6 +823,15 @@ function genBarChart(selected_countries){
 
 /*
 /*
+=======
+
+//BARCHART
+
+
+function genBarChart(){
+  d3.csv("total_costs.csv", function(data) {
+
+>>>>>>> 8336ec9c3f01dbbaeca20d5337f39b6c48802ac0
     var margin = { top: 35, right: 0, bottom: 30, left: 40 };
 
     var width = 700 - margin.left - margin.right;
@@ -727,14 +843,20 @@ function genBarChart(selected_countries){
         return height - d;
       });
 
+<<<<<<< HEAD
 
+=======
+      ///////////////////////
+      // Scales
+>>>>>>> 8336ec9c3f01dbbaeca20d5337f39b6c48802ac0
       var x = d3.scale.ordinal()
-          .domain(data.map(function(d) { return d['Country']; }))
+          .domain(data.map(function(d) { return d.Country; }))
           .rangeRoundBands([0, width], .1);
 
       var y = d3.scale.linear()
-          .domain([0, d3.max(data, function(d) {return d['Hostel']; }) * 1.1])
+          .domain([0, d3.max(data, function(d) { return d.accomodation_5; }) * 1.1])
           .range([(height/1.5), 0]);
+
 
       ///////////////////////
       // Axis
@@ -822,50 +944,33 @@ d3.select("#add-btn").on("click", function(e){
 
 	if (cList.length < 5) cList.push(Math.round(Math.random() * 100)); //mete numero random para ja
   console.log(cList);
-  //console.log(selected_countries);
 	genBarChart();
 
 });
 */
 //}
 
-function genFloatingBar(){
-  var selected =["RUS","POR"]
+function genFloatingBarSelector(selected) {
 
-d3.csv("default_5_barChart.csv", function(data) {
 
-  var selector = d3.select("#dropFloatBar")
-                        .append("select")
-                        .attr("id","dropdown")
-                        .on("change", function(d){
-                          selection = document.getElementById("dropdown");});
-selector.selectAll("option")
-              .data(selected)
-              .enter().append("option")
-              .attr("value", function(d){ return d; })
-              .text(function(d){ return d; })
-var data=[
-     {"month": "January", "to": 4,"from": -3},
-     {"month": "February", "to": 5,"from": -2},
-     {"month": "March", "to": 10,"from": 2},
-     {"month": "April", "to": 16,"from": 7},
-     {"month": "May", "to": 22,"from": 12},
-     {"month": "June", "to": 26,"from": 18},
-     {"month": "July", "to": 30,"from": 20},
-     {"month": "August", "to": 28,"from": 20},
-     {"month": "September", "to": 24,"from": 16},
-     {"month": "October", "to": 18,"from": 10},
-     {"month": "November", "to": 12,"from": 5},
-     {"month": "December", "to": 6,"from": 0}
-    ]
+      //selector.selectAll("option")
+        //            .data(selected)
+          //          .enter().append("option")
+            //        .attr("value", function(d){ return d; })
+                 //   .text(function(d){ return d; })
+}
+
+function genFloatingBar() {
+  d3.csv("total_costs.csv", function(data) {
+
     var ydata = [
-      {"filter": "Accomodation"},
-      {"filter": "Food"},
-      {"filter": "Transportation"},
-      {"filter": "Culture"},
-      {"filter": "Alcohol"},
-      {"filter": "Shopping"}
-    ]
+        {"filter": "accomodation", "to":data[0].average_accomodation, "from": 0},
+        {"filter": "food", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food)).toString(), "from": data[0].average_accomodation},
+        {"filter": "transportation", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation)).toString(), "from": (parseInt(data[0].average_accomodation) + parseInt(data[0].average_food)).toString()},
+        {"filter": "culture", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture)).toString(), "from": (parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation)).toString()},
+        {"filter": "alcohol", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture) + parseInt(data[0].alcohol)).toString(), "from":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture)).toString()},
+        {"filter": "shopping", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture) + parseInt(data[0].alcohol) + parseInt(data[0].shopping)).toString(), "from":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture) + parseInt(data[0].alcohol)).toString()}
+      ]
 
     var margin = {top: 50, right: 50, bottom: 50, left: 100},
         width = 900 - margin.left - margin.right,
@@ -877,8 +982,8 @@ var data=[
     var x = d3.scale.linear()
         .range([0,width]);
 
-    y.domain(data.map(function(d) { return d.month;}));
-    x.domain([d3.min(data,function(d){return d.from;}), d3.max(data,function(d){return d.to;})]);
+    y.domain(ydata.map(function(d) { return d.filter;}));
+    x.domain([0, d3.max(data,function(d){ return d.total_average;})]);
 
     var xAxis = d3.svg.axis()
         .scale(x)
@@ -889,7 +994,7 @@ var data=[
         .scale(y)
         .orient("left");
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#dropFloatBar").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -903,19 +1008,19 @@ var data=[
           .attr("x", width-75)
           .attr("dx", ".71em")
           .attr("dy", "-.71em")
-          .text("Temperatures (C)");
+          .text("Price (€)");
 
       svg.append("g")
           .attr("class", "y axisFloating")
           .call(yAxis);
 
       svg.selectAll(".barFloating")
-          .data(data)
+          .data(ydata)
           .enter().append("rect")
           .attr("class", "barFloating")
-          .attr("y", function(d) {return y(d.month); })
+          .attr("y", function(d) {return y(d.filter); })
           .attr("height", y.rangeBand())
-          .attr("x", function(d) {return x(d.from); })
+          .attr("x", function(d) { return x(d.from); })
           .attr("width", function(d) { return x(d.to)-x(d.from) });
 
         // add legend
@@ -966,5 +1071,5 @@ var data=[
       tooltip.style('display', 'none');
       tooltip.style('opacity',0);
     });
-    })
-  }
+  });
+}
