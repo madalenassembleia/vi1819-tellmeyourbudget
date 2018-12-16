@@ -35,6 +35,8 @@ $(document).ready(function () {
               };
               selected_countries.push(country_id);
               $("#dropdownFloating").append(new Option(geography.properties.name, country_id));
+              d3.select(".chart").select("svg").remove();
+              genBarChart(selected_countries);
             }
             else if (selected_countries.includes(country_id) === true) {
               var new_fills = {
@@ -44,7 +46,8 @@ $(document).ready(function () {
               };
               var index = selected_countries.indexOf(country_id);
               selected_countries.splice(index, 1);
-              //$('#dropdownFloating option[value="${country_id}"]').remove();
+              d3.select(".chart").select("svg").remove();
+              genBarChart(selected_countries);
             }
             datamap.updateChoropleth(new_fills);
         });
@@ -124,7 +127,7 @@ $(document).ready(function () {
                       genFloatingBar(selected_countries);
                     });
 
-  genBarChart();
+  genBarChart(selected_countries);
 
   genDotPlot();
   genFloatingBarSelector(selected_countries);
@@ -722,98 +725,197 @@ if (optionValue == "Hotel"){
 
   //BARCHART
 function genBarChart(selected_countries){
-  if (selected_countries.length==0){
-  d3.csv("default_5_barChart.csv", function(data) {
+  console.log("selected_countries", selected_countries.length);
 
-  var margin = { top: 35, right: 0, bottom: 30, left: 40 };
-  var width = 500 - margin.left - margin.right;
-  var height = 500 - margin.top - margin.bottom;
-  
+  if (selected_countries.length == 0) {
+    console.log("==0");
+    d3.csv("default_5_barChart.csv", function(data) {
 
-  var chart = d3.select(".chart")
-      .attr("width", 960)
-      .attr("height", 500)
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-      
-  ///////////////////////
-  // Scales
-  var x = d3.scale.ordinal()
-      .domain(data.map(function(d) {return d['Country']; }))
-      .rangeRoundBands([0, width], .1);
+    var margin = { top: 35, right: 0, bottom: 30, left: 40 };
+    var width = 500 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+    
 
-  var y = d3.scale.linear()
-      .domain([0, d3.max(data, function(d) {return d['Hostel']; }) * 1.1])
-      .range([height, 0]);
+    var chart = d3.select(".chart").append("svg")
+        .attr("width", 960)
+        .attr("height", 500)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        
+    ///////////////////////
+    // Scales
+    var x = d3.scale.ordinal()
+        .domain(data.map(function(d) {debugger; return d['Country']; }))
+        .rangeRoundBands([0, width], .1);
 
-  ///////////////////////
-  // Axis
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
+    var y = d3.scale.linear()
+        .domain([0, d3.max(data, function(d) {return d['Hostel']; }) * 1.1])
+        .range([height, 0]);
 
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left");
+    ///////////////////////
+    // Axis
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
 
-  chart.append("g")
-      .attr("class", "x axisBarChart")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
 
-  chart.append("g")
-      .attr("class", "y axisBarChart")
-      .call(yAxis);
+    chart.append("g")
+        .attr("class", "x axisBarChart")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
 
-  ///////////////////////
-  // Title
-  chart.append("text")
-    .text('Bar Chart!')
-    .attr("text-anchor", "middle")
-    .attr("class", "graph-title")
-    .attr("y", -10)
-    .attr("x", width / 2.0);
+    chart.append("g")
+        .attr("class", "y axisBarChart")
+        .call(yAxis);
 
-  ///////////////////////
-  // Bars
-  var bar = chart.selectAll(".barBarChart")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "barBarChart")
-      .attr("x", function(d) {return x(d['Country']); })
-      .attr("y", height)
-      .attr("width", x.rangeBand())
-      .attr("height", 0);
+    ///////////////////////
+    // Title
+    chart.append("text")
+      .text('Bar Chart!')
+      .attr("text-anchor", "middle")
+      .attr("class", "graph-title")
+      .attr("y", -10)
+      .attr("x", width / 2.0);
 
-  bar.transition()
-      .duration(1500)
-      .ease("elastic")
-      .attr("y", function(d) {return height - parseFloat(d['Hostel']); })
-      .attr("height", function(d) {return parseFloat(d['Hostel']); })
+    ///////////////////////
+    // Bars
+    var bar = chart.selectAll(".barBarChart")
+        .data(data)
+      .enter().append("rect")
+        .attr("class", "barBarChart")
+        .attr("x", function(d) {return x(d['Country']); })
+        .attr("y", height)
+        .attr("width", x.rangeBand())
+        .attr("height", 0);
 
-  ///////////////////////
-  // Tooltips
-  var tooltip = d3.select("body").append("div")
-      .attr("class", "tooltipBarChart");
+    bar.transition()
+        .duration(1500)
+        .ease("elastic")
+        .attr("y", function(d) {return height - parseFloat(d['Hostel']); })
+        .attr("height", function(d) {return parseFloat(d['Hostel']); })
 
-  bar.on("mouseover", function(d) {
-        tooltip.html(d['Country'])
-            .style("visibility", "visible");
-        tooltip.html(d['Hostel']+"€")
-            .style("visibility", "visible");
-      })
-      .on("mousemove", function(d) {
-        tooltip.style("top", event.pageY - (tooltip[0][0].clientHeight + 5) + "px")
-            .style("left", event.pageX - (tooltip[0][0].clientWidth / 2.0) + "px");
-      })
-      .on("mouseout", function(d) {
-        tooltip.style("visibility", "hidden");
+    ///////////////////////
+    // Tooltips
+    var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltipBarChart");
+
+    bar.on("mouseover", function(d) {
+          tooltip.html(d['Country'])
+              .style("visibility", "visible");
+          tooltip.html(d['Hostel']+"€")
+              .style("visibility", "visible");
+        })
+        .on("mousemove", function(d) {
+          tooltip.style("top", event.pageY - (tooltip[0][0].clientHeight + 5) + "px")
+              .style("left", event.pageX - (tooltip[0][0].clientWidth / 2.0) + "px");
+        })
+        .on("mouseout", function(d) {
+          tooltip.style("visibility", "hidden");
+        });
       });
-   
-  });
-}
-  else{
+    }
+
+  else {
     console.log("entrei");
+    console.log("==0");
+
+    d3.csv("total_costs.csv", function(data) {
+      var total_costs = [];
+      for(var i = 0; i < selected_countries.length; i++) {
+        for(var j = 0; j < data.length; j++) {
+          if (selected_countries[i] == data[j].id) {
+            total_costs.push(data[j]);
+          }
+        }
+      }
+
+      var margin = { top: 35, right: 0, bottom: 30, left: 40 };
+      var width = 500 - margin.left - margin.right;
+      var height = 500 - margin.top - margin.bottom;
+      
+      var chart = d3.select(".chart").append("svg")
+          .attr("width", 960)
+          .attr("height", 500)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+          
+      ///////////////////////
+      // Scales
+      var x = d3.scale.ordinal()
+          .domain(total_costs.map(function(d) {debugger; return d['Country']; }))
+          .rangeRoundBands([0, width], .1);
+
+      var y = d3.scale.linear()
+          .domain([0, d3.max(total_costs, function(d) {debugger; return d['total_average']; }) * 1.1])
+          .range([height, 0]);
+
+      ///////////////////////
+      // Axis
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom");
+
+      var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient("left");
+
+      chart.append("g")
+          .attr("class", "x axisBarChart")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      chart.append("g")
+          .attr("class", "y axisBarChart")
+          .call(yAxis);
+
+      ///////////////////////
+      // Title
+/*      chart.append("text")
+        .text('Bar Chart!')
+        .attr("text-anchor", "middle")
+        .attr("class", "graph-title")
+        .attr("y", -10)
+        .attr("x", width / 2.0);
+*/
+      ///////////////////////
+      // Bars
+      var bar = chart.selectAll(".barBarChart")
+          .data(total_costs)
+        .enter().append("rect")
+          .attr("class", "barBarChart")
+          .attr("x", function(d) {return x(d['Country']); })
+          .attr("y", height)
+          .attr("width", x.rangeBand())
+          .attr("height", 0);
+
+      bar.transition()
+          .duration(1500)
+          .ease("elastic")
+          .attr("y", function(d) {return height - parseFloat(d['Hostel']); })
+          .attr("height", function(d) {return parseFloat(d['Hostel']); })
+
+      ///////////////////////
+      // Tooltips
+      var tooltip = d3.select("body").append("div")
+          .attr("class", "tooltipBarChart");
+
+      bar.on("mouseover", function(d) {
+            tooltip.html(d['Country'])
+                .style("visibility", "visible");
+            tooltip.html(d['Hostel']+"€")
+                .style("visibility", "visible");
+          })
+          .on("mousemove", function(d) {
+            tooltip.style("top", event.pageY - (tooltip[0][0].clientHeight + 5) + "px")
+                .style("left", event.pageX - (tooltip[0][0].clientWidth / 2.0) + "px");
+          })
+          .on("mouseout", function(d) {
+            tooltip.style("visibility", "hidden");
+          });
+    });
   }
 }
 
