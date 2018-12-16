@@ -11,8 +11,8 @@ $(document).ready(function () {
     $(".side-menu-form").css("padding", "0px");
   });
 
-    $("#submit").on('click', function() {
-	    $(".side-menu-form").css("width", "0px");
-	    $(".side-menu-form").css("padding", "0px");
+  $("#submit").on('click', function() {
+    $(".side-menu-form").css("width", "0px");
+    $(".side-menu-form").css("padding", "0px");
   });
 });
