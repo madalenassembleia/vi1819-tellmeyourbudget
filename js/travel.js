@@ -113,7 +113,7 @@ $(document).ready(function () {
     }
   }
 
-  genBarChart();
+  genBarChart(selected_countries);
   genDotPlot();
   genFloatingBar();
 });
@@ -611,30 +611,123 @@ function genDotPlot(){
 
 }
 
-//BARCHART
 
 
-function genBarChart(){
-  d3.csv("total_costs.csv", function(data) {
-    debugger;
+  //BARCHART
+function genBarChart(selected_countries){
+  if (selected_countries.length==0){
+  d3.csv("default_5_barChart.csv", function(data) {
 
-    //for(var i = 0; i < 5; i++) {
-    //  selected_countries[i]
-    //}
+  var margin = { top: 35, right: 0, bottom: 30, left: 40 };
+  var width = 500 - margin.left - margin.right;
+  var height = 500 - margin.top - margin.bottom;
+  
+
+  var chart = d3.select(".chart")
+      .attr("width", 960)
+      .attr("height", 500)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      
+  ///////////////////////
+  // Scales
+  var x = d3.scale.ordinal()
+      .domain(data.map(function(d) {return d['Country']; }))
+      .rangeRoundBands([0, width], .1);
+
+  var y = d3.scale.linear()
+      .domain([0, d3.max(data, function(d) {return d['Hostel']; }) * 1.1])
+      .range([height, 0]);
+
+  ///////////////////////
+  // Axis
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
+
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+
+  chart.append("g")
+      .attr("class", "x axisBarChart")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  chart.append("g")
+      .attr("class", "y axisBarChart")
+      .call(yAxis);
+
+  ///////////////////////
+  // Title
+  chart.append("text")
+    .text('Bar Chart!')
+    .attr("text-anchor", "middle")
+    .attr("class", "graph-title")
+    .attr("y", -10)
+    .attr("x", width / 2.0);
+
+  ///////////////////////
+  // Bars
+  var bar = chart.selectAll(".barBarChart")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "barBarChart")
+      .attr("x", function(d) {return x(d['Country']); })
+      .attr("y", height)
+      .attr("width", x.rangeBand())
+      .attr("height", 0);
+
+  bar.transition()
+      .duration(1500)
+      .ease("elastic")
+      .attr("y", function(d) {return height - parseFloat(d['Hostel']); })
+      .attr("height", function(d) {return parseFloat(d['Hostel']); })
+
+  ///////////////////////
+  // Tooltips
+  var tooltip = d3.select("body").append("div")
+      .attr("class", "tooltipBarChart");
+
+  bar.on("mouseover", function(d) {
+        tooltip.html(d['Country'])
+            .style("visibility", "visible");
+        tooltip.html(d['Hostel']+"€")
+            .style("visibility", "visible");
+      })
+      .on("mousemove", function(d) {
+        tooltip.style("top", event.pageY - (tooltip[0][0].clientHeight + 5) + "px")
+            .style("left", event.pageX - (tooltip[0][0].clientWidth / 2.0) + "px");
+      })
+      .on("mouseout", function(d) {
+        tooltip.style("visibility", "hidden");
+      });
+   
+  });
+}
+  else{
+    console.log("entrei");
+  }
+}
+
+
+
+  
+
+/*
+/*
     var margin = { top: 35, right: 0, bottom: 30, left: 40 };
 
     var width = 700 - margin.left - margin.right;
     var height = 400 - margin.top - margin.bottom;
 
-    var chart = d3.select("#barchart").selectAll(".bar").data(selected_countries.map)
+    var chart = d3.select("#barchart").selectAll(".bar").data(total_costs)
                   .style("height", function(d){ return d; })
                   .style("margin-top", function(d){
         return height - d;
       });
 
 
-      ///////////////////////
-      // Scales
       var x = d3.scale.ordinal()
           .domain(data.map(function(d) { return d['Country']; }))
           .rangeRoundBands([0, width], .1);
@@ -708,8 +801,9 @@ function genBarChart(){
 
     ///////////////////////
   // Tooltips
-  var tooltip = d3.select("body").append("div")
-      .attr("class", "tooltip");
+  //var tooltip = d3.select("body").append("div")
+    //  .attr("class", "tooltip");
+
 
   /*bar.on("mouseover", function(d) {
         tooltip.html(d['value'])
@@ -722,8 +816,8 @@ function genBarChart(){
       .on("mouseout", function(d) {
         tooltip.style("visibility", "hidden");
       });*/
-});
-
+//});
+/*
 d3.select("#add-btn").on("click", function(e){
 
 	if (cList.length < 5) cList.push(Math.round(Math.random() * 100)); //mete numero random para ja
@@ -732,7 +826,8 @@ d3.select("#add-btn").on("click", function(e){
 	genBarChart();
 
 });
-}
+*/
+//}
 
 function genFloatingBar(){
   var selected =["RUS","POR"]

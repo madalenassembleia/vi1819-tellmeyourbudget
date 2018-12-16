@@ -363,5 +363,44 @@ div.text {
     display: block;
     opacity: 0;
 }
-
 /* ---------------------------------------------------------------------- */
+
+
+/**BARCHART-----------------------------------------------------*/
+
+.barBarChart {
+  fill: steelblue;
+}
+
+.barBarChart:hover {
+  fill: lightblue;
+}
+
+.axisBarChart text {
+  font: 10px sans-serif;
+}
+
+.axisBarChart path,
+.axisBarChart line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axisBarChart path {
+  display: none;
+}
+
+.tooltipBarChart {
+  position: absolute;
+  padding: 10px;
+  font: 12px sans-serif;
+  background: #222;
+  color: #fff;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0.9;
+  visibility: hidden;
+}
+/**------------------------------------------------------------------------------------*/
