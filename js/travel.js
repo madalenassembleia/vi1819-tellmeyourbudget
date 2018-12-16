@@ -113,9 +113,9 @@ $(document).ready(function () {
     }
   }
 
-  genBarChart();
+  //genBarChart();
   genDotPlot();
-  genFloatingBar();
+  //genFloatingBar();
 });
 /*
   d3.csv("top_cheapest_2.csv", function (data) {
@@ -345,7 +345,7 @@ var optionValue = "Hotel";
 
 function genDotPlot(){
 
-  var fullwidth = 700, fullheight = 300;
+  var fullwidth = 700, fullheight = 400;
   var margin = {top: 20, right: 25, bottom: 20, left: 200};
   var width = 1000 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
@@ -355,6 +355,7 @@ function genDotPlot(){
   d3.csv("accommodation_food_costs.csv", function(error, data) {
 
   var options = ["Hotel", "Food"];
+  var legendLabels = ["1-star", "2-star", "3-star", "4-star", "5-star"]
 
   //filter
   console.log(Object.keys(data[0]))
@@ -366,6 +367,16 @@ function genDotPlot(){
           return ((d!="id") && (d != "region")  &&(d!="Country") && (d != "accomodation")&& (d != "accomodation_1")&& (d != "accomodation_2")&& (d != "accomodation_3") && (d != "accomodation_4")  &&(d!="accomodation_5")); //inc
         }
 		});
+
+  /*  console.log(subtitles)
+    subtitles.fitler(function(d){
+      if (optionValue == "Hotel"){
+        return ((d != "McDonalds") &&(d!="2-Course Meal"));
+      }
+      else{
+        return ((d!="1-star") && (d != "2-star")  &&(d!="3-star") && (d != "4-star")&& (d != "5-star"));
+      }
+    })*/
 
     console.log("elements: ", elements)
     var selection = elements[0];
@@ -400,16 +411,47 @@ function genDotPlot(){
     });
 
     var max = d3.max(data, d => d[elements[elements.length - 1]]*1);
-    console.log("max", max)
-
-
-    widthScale.domain([0, max*1.3]); //mudar valor
-
-    // js map: array out of all the d.region fields
+    widthScale.domain([0, max*1.3]);
     heightScale.domain(data.map(function(d) { return d.Country; } ));
 
-    // Make the faint lines from y labels to highest dot
 
+  var legendX = 200,
+    legendY = 320,
+    spaceBetween = 70,
+    titleOffset = -120;
+
+    // code for positioning legend
+    var legend = svg.append("g")
+      .attr("transform", "translate(" + [legendX, legendY] + ")");
+
+    legend.append("g")
+      .attr("class", "title")
+      .append("text")
+      .attr("x", titleOffset)
+      .text("Description")
+
+      legend.selectAll("circle")
+    	.data(data)
+    .enter().append("circle")
+    	.attr("cx", function(d, i) {
+      	return spaceBetween * i;
+    	})
+    	.attr("cy", -4)
+    	.attr("r", 5)
+    	.attr("class", function(d) { });
+/*
+    // add labels
+    legend.append("g")
+      .selectAll("text")
+    	.data(legendLabels)
+    .enter().append("text")
+      .attr("x", function(d, i) {
+      	return spaceBetween * i + 10;
+    	})
+    	.text(function(d) { return d.label });
+*/
+
+    // Make the faint lines from y labels to highest dot
     var linesGrid = svg.selectAll("lines.grid")
       .data(data)
       .enter()
@@ -421,7 +463,10 @@ function genDotPlot(){
         return heightScale(d.Country) + heightScale.rangeBand()/4;
       })
       .attr("x2", function(d) {
-        return margin.left + widthScale(+d[elements[0]]);
+        if (+d[elements[0]] != 0){
+          return margin.left + widthScale(+d[elements[0]]);
+        }
+        else { return margin.left + widthScale(+d[elements[1]]);}
 
       })
       .attr("y2", function(d) {
@@ -478,7 +523,7 @@ function genDotPlot(){
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h1star: " + d.h1star + "ï¿½";
+        return "" + d[elements[0]] + "€";
       });
 
 
@@ -508,7 +553,7 @@ function genDotPlot(){
         })
         .append("title")
         .text(function(d) {
-          return d.Country + " in h1star: " + d[elements[1]] + "â‚¬";
+          return  d[elements[1]] + "€";
         });
 
 
@@ -539,7 +584,7 @@ if (optionValue == "Hotel"){
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h2star: " + d.h2star + "ï¿½";
+        return d[elements[2]] + "€";
       });
 
       // Make the dots for h3star
@@ -568,7 +613,7 @@ if (optionValue == "Hotel"){
         })
         .append("title")
         .text(function(d) {
-          return d.region + " in h3star: " + d.h3star + "ï¿½";
+          return d[elements[3]] + "€";
         });
 
 
@@ -597,7 +642,7 @@ if (optionValue == "Hotel"){
                   })
             .append("title")
             .text(function(d) {
-                    return d.region + " in h4star: " + d.h4star + "ï¿½";
+                    return d[elements[4]] + "€";
                   });
 
 
@@ -627,7 +672,7 @@ if (optionValue == "Hotel"){
       })
       .append("title")
       .text(function(d) {
-        return d.region + " in h5star: " + d.h5star + "ï¿½";
+        return d[elements[5]] + "€";
       });
 
   }
@@ -651,7 +696,7 @@ if (optionValue == "Hotel"){
       .attr("dy", "12")
       .text("Percent");
 
-      //var options=["Hotel", "Food"]
+
 
       var selector = d3.select("#drop")
                         .append("select")
@@ -661,13 +706,13 @@ if (optionValue == "Hotel"){
                           console.log(optionValue)
 
 
-      console.log("New Elements: ",elements)
+      console.log("New Elements: ", elements)
       elements = Object.keys(data[0]).filter(function(d){
             if (optionValue == "Hotel"){
               return ((d != "id") &&(d!="Country") &&(d!="food") && (d!="food_expensive"));
             }
             else{
-              return ((d!="id") && (d != "region")  &&(d!="Country") && (d != "accomodation")&& (d != "accomodation_1")&& (d != "accomodation_2")&& (d != "accomodation_3") && (d != "accomodation_4")  &&(d!="accomodation_5")); //inc
+              return ((d != "id") && (d != "region")  &&(d!="Country") && (d != "accomodation")&& (d != "accomodation_1")&& (d != "accomodation_2")&& (d != "accomodation_3") && (d != "accomodation_4")  &&(d!="accomodation_5")); //inc
             }
     		});
 
@@ -676,14 +721,46 @@ if (optionValue == "Hotel"){
       console.log(" new max", max)
 
       widthScale.domain([0, max*1.3]); //mudar valor
+      xAxis.scale(widthScale);
+
+        d3.selectAll("line.grid")
+            .attr("x1", margin.left)
+            .attr("y1", function(d) {
+              return heightScale(d.Country) + heightScale.rangeBand()/4;
+            })
+            .attr("x2", function(d) {
+              return margin.left + widthScale(+d[elements[0]]);
+
+            })
+            .attr("y2", function(d) {
+              return heightScale(d.Country) + heightScale.rangeBand()/4;
+            });
+
+          // Make the dotted lines between the dots
+
+          d3.selectAll("line.between")
+            .attr("x1", function(d) {
+              return margin.left + widthScale(+d[elements[0]]);
+            })
+            .attr("y1", function(d) {
+              return heightScale(d.Country) + heightScale.rangeBand()/4;
+            })
+            .attr("x2", function(d) {
+              return margin.left + widthScale(d[elements[elements.length - 1]]);
+            })
+            .attr("y2", function(d) {
+              return heightScale(d.Country) + heightScale.rangeBand()/4;
+            })
+            .attr("stroke-dasharray", "5,5")
+            .attr("stroke-width", "0.5");
 
       //heightScale.domain(data.map(function(d) { return d.Country; } ));
       //yAxis.scale(heightScale);
 
-      d3.selectAll("circle")
+      d3.selectAll("circle.hostel")
         .transition()
         .attr("cx", function(d) {
-          return margin.left + widthScale(+d[elements[elements.length - 1]]);
+          return margin.left + widthScale(+d[elements[0]]);
         })
         .attr("r", heightScale.rangeBand()/9)
         .attr("cy", function(d) {
@@ -693,6 +770,86 @@ if (optionValue == "Hotel"){
         d3.selectAll("g.y.axis")
           .transition()
           .call(yAxis);
+
+        d3.selectAll("circle.h1star")
+          .transition()
+          .attr("cx", function(d) {
+            return margin.left + widthScale(+d[elements[1]]);
+          })
+          .attr("r", heightScale.rangeBand()/9)
+          .attr("cy", function(d) {
+            return heightScale(d.Country) + heightScale.rangeBand()/4;
+          });
+
+        d3.selectAll("g.y.axis")
+          .transition()
+          .call(yAxis);
+
+  console.log("Updated value: ", optionValue)
+
+  if (optionValue == "Hotel"){
+
+      d3.selectAll("circle.h2star")
+        .transition()
+        .attr("cx", function(d) {
+          return margin.left + widthScale(+d[elements[2]]);
+        })
+        .attr("r", heightScale.rangeBand()/9)
+        .attr("cy", function(d) {
+          return heightScale(d.Country) + heightScale.rangeBand()/4;
+        });
+
+        d3.selectAll("g.y.axis")
+          .transition()
+          .call(yAxis);
+
+
+        d3.selectAll("circle.h3star")
+          .transition()
+          .attr("cx", function(d) {
+            return margin.left + widthScale(+d[elements[3]]);
+          })
+          .attr("r", heightScale.rangeBand()/9)
+          .attr("cy", function(d) {
+            return heightScale(d.Country) + heightScale.rangeBand()/4;
+          });
+
+        d3.selectAll("g.y.axis")
+          .transition()
+          .call(yAxis);
+
+          d3.selectAll("circle.h4star")
+            .transition()
+            .attr("cx", function(d) {
+              return margin.left + widthScale(+d[elements[4]]);
+            })
+            .attr("r", heightScale.rangeBand()/9)
+            .attr("cy", function(d) {
+              return heightScale(d.Country) + heightScale.rangeBand()/4;
+            });
+
+          d3.selectAll("g.y.axis")
+            .transition()
+            .call(yAxis);
+
+
+          d3.selectAll("circle.h5star")
+            .transition()
+            .attr("cx", function(d) {
+              return margin.left + widthScale(+d[elements[5]]);
+            })
+            .attr("r",function() {
+              $("circle.h5star").css("opacity", "0.0");
+              return heightScale.rangeBand()/9;
+            })
+            .attr("cy", function(d) {
+              return heightScale(d.Country) + heightScale.rangeBand()/4;
+            });
+
+          d3.selectAll("g.y.axis")
+            .transition()
+            .call(yAxis);
+}
 
       });
       selector.selectAll("option")
@@ -708,7 +865,7 @@ if (optionValue == "Hotel"){
 //BARCHART
 
 
-function genBarChart(){
+/*function genBarChart(){
   d3.csv("total_costs.csv", function(data) {
 
     //for(var i = 0; i < 5; i++) {
@@ -719,7 +876,7 @@ function genBarChart(){
     var width = 700 - margin.left - margin.right;
     var height = 400 - margin.top - margin.bottom;
 
-    var chart = d3.select("#barchart").selectAll(".bar").data(selected_countries.map)
+  /*  var chart = d3.select("#barchart").selectAll(".bar").data(selected_countries.map)
                   .style("height", function(d){ return d; })
                   .style("margin-top", function(d){
         return height - d;
@@ -798,7 +955,7 @@ function genBarChart(){
         .duration(1500)
         .ease("elastic")
         .attr("y", function(d) {return parseFloat(d['Hostel']); })
-        .attr("height", function(d) {return (height/1.5) - parseFloat(d['Hostel']); })*/
+        .attr("height", function(d) {return (height/1.5) - parseFloat(d['Hostel']); })
 
     ///////////////////////
   // Tooltips
@@ -815,7 +972,7 @@ function genBarChart(){
       })
       .on("mouseout", function(d) {
         tooltip.style("visibility", "hidden");
-      });*/
+      });
 });
 
 d3.select("#add-btn").on("click", function(e){
@@ -965,4 +1122,4 @@ var data=[
       tooltip.style('opacity',0);
     });
     })
-  }
+  }*/
