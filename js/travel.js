@@ -120,236 +120,15 @@ $(document).ready(function () {
                     .attr("id","dropdownFloating")
                     .on("change", function(d){
                       d3.select("#dropFloatBar").select("svg").remove();
-                      genFloatingBar(selected_countries);
+                      var element = document.getElementById("dropdownFloating");
+                      var value = element.options[element.selectedIndex].value;
+                      genFloatingBar(value);
                     });
 
-  genBarChart();
+  genBarChart(selected_countries);
   genDotPlot();
-  genFloatingBarSelector(selected_countries);
-  genFloatingBar();
+  genFloatingBar("PRT");
 });
-/*
-  d3.csv("top_cheapest_2.csv", function (data) {
-    $('input[id^="form"]').change(function() {
-      if($('#form-accomodation').is(':checked')) {
-        var top_countries = data[0];
-
-
-      }
-      else if($('#form-food').is(':checked')) {
-        console.log("food");
-      }
-      else if($('#form-transportation').is(':checked')) {
-        console.log("transportation");
-      }
-      else if($('#form-culture').is(':checked')) {
-        console.log("culture");
-
-      }
-      else if($('#form-alcohol').is(':checked')) {
-        console.log("alcohol");
-      }
-      else if($('#form-shopping').is(':checked')) {
-        console.log("shopping");
-      }
-    });
-  });
-
-  /*d3.csv("top_cheapest.csv", function (data) {
-      gen_graph(data);
-  });*/
-
-/*
-/*
-var dataset;
-var visited_countries;
-var pinnedCountries = false;
-
-d3.csv("top_cheapest.csv").then(function (data) {
-    dataset = data;
-    gen_vis();
-    gen_graph(data);
-    select_countries(data);
-});
-
-function gen_vis() {
-  var selected_countries = [];
-	var width = window.innerWidth,
-	    height = window.innerHeight,
-	    centered,
-	    clicked_point;
-
-	var projection = d3.geoNaturalEarth1()
-                   .center([0, 15])
-                   .rotate([-9,0])
-                   .scale([1300/(2*Math.PI)])
-                   .translate([450,300]);
-
-	var plane_path = d3.geoPath()
-	        .projection(projection);
-
-	var svg = d3.select("#map").append("svg")
-	    .attr("width", width)
-	    .attr("height", height)
-	    .attr("class", "map");
-
-  var tooltip = d3.select("#map").append("div")
-      .attr("class", "tooltip");
-
-	var g = svg.append("g");
-	var path = d3.geoPath()
-	    .projection(projection);
-
-  // parse the country files
-  var files = ["world_dataset.json", "world_country_names.csv"];
-  var promises = [];
-  promises.push(d3.json(files[0]));
-  promises.push(d3.csv(files[1]));
-
-  Promise.all(promises).then(function(values) {
-    var topology = values[0];
-    var names = values[1];
-
-    var countries1 = topojson.feature(topology, topology.objects.countries).features;
-    countries = countries1.filter(function(d) {
-    return names.some(function(n) {
-      if (d.id == n.id)  {
-        return d.name = n.name;
-      }
-    })});
-    g.selectAll("path")
-      .data(countries)
-      .enter()
-      .append("path")
-      .attr("d", path)
-      .on("mouseover",function(d,i){
-                d3.select(this).classed('coutry_tooltip', true);
-                return tooltip.style("hidden", false).html(d.name);
-
-            })
-            .on("mousemove",function(d,i){
-                tooltip.classed("hidden", false)
-                       .style("top", (d3.event.pageY) + "px")
-                       .style("left", (d3.event.pageX + 10) + "px")
-                       .html(d.name);
-            })
-            .on("mouseout",function(d,i){
-                d3.select(this).classed('coutry_tooltip', false);
-                tooltip.classed("hidden", true);
-            })
-            .on('click', selected)
-      ;
-  });
-
-  function selected(d) {
-    if (selected_countries.includes(d.id) == false && selected_countries.length < 5){
-      d3.select(this).classed('active', true);
-      selected_countries.push(d.id);
-      return
-    }
-    else if(selected_countries.includes(d.id) == true){
-      d3.select(this).classed('active', false);
-      var index = selected_countries.indexOf(d.id);
-      selected_countries.splice(index, 1);
-      return
-    }
-      //debugger;
-    //d3.select('.acitve').classed('active', false);
-    return
-  }
-}
-
-function select_countries(data) {
-  $('input[id^="form"]').change(function() {
-    if($('#form-accomodation').is(':checked')) {
-    }
-    else if($('#form-food').is(':checked')) {
-      console.log("food");
-    }
-    else if($('#form-transportation').is(':checked')) {
-      console.log("transportation");
-    }
-    else if($('#form-culture').is(':checked')) {
-      console.log("culture");
-
-    }
-    else if($('#form-alcohol').is(':checked')) {
-      console.log("alcohol");
-    }
-    else if($('#form-shopping').is(':checked')) {
-      console.log("shopping");
-    }
-  });
-*/
-
-/*function gen_graph(data){
-
-  var pinnedCountries = false;
-  var w = window.innerWidth/3, h = window.innerHeight/3;
-  var padding = 20;
-
-  if (!pinnedCountries){
-
-    pinnedCountries = true;
-
-    var yscale = d3.scale.linear()
-                      .domain([0, 50])
-                      .rangeRound([h-padding, padding]);
-
-    var xscale = d3.scaleBand() //ORDINAL?
-                      .domain(data.map(function(d){ return d.Country;})) // muito certo omg
-                      .range([padding, w-padding]);
-
-    /*var yaxis = d3.svg.axis()
-                    .orient(); //TODO
-                    .scale(yscale);
-
-      //var bar_w = Math.floor(w/(data[1].length*2))-1;
-
-      var xaxis = d3.svg.axis()
-                    .scale(xscale)
-                    .orient() //TODO
-                    .ticks(5);
-
-      var svg = d3.select("#rankedgraph").append("svg")
-                  .attr("width", w)
-                  .attr("height", h)
-                  .attr("class", "rankedgraph");
-
-      svg.append("g")
-          .attr("class", "yaxis")
-          .attr("transform","translate(30,0)")
-          .call(yaxis);
-
-
-      var bar = svg.append("g").attr("id", "GraphBars")
-           .selectAll("rect")
-               .data(data)
-           .enter().append("rect")
-               .attr("width",Math.floor(w/((data.length+3)))-1) //21
-               .attr("height", function(d){ return h-yscale(parseInt(d.Hostel));})
-               .attr("x", function(d){ return (padding + xscale(d.Country));})
-               .attr("y", function(d){ return (-(padding) + yscale(parseInt(d.Hostel)));})
-               .attr("fill","#7AC5CD");
-
-      svg.append("g")
-            .attr("class", "xaxis")
-            .attr("transform", "translate (10," + (h-padding) + ")")
-            .call(xaxis);
-  }
-
-  else{
-      //ir buscar paises do outro mapa
-  }
-
-}
-
-
-function updatePinned(){
-  if(selected_countries.length<=1)
-    pinnedCountries = true;
-}
-*/
 
 var optionValue = "Hotel";
 
@@ -719,7 +498,7 @@ if (optionValue == "Hotel"){
 //BARCHART
 
 
-function genBarChart(){
+function genBarChart(selected_countries){
   d3.csv("total_costs.csv", function(data) {
 
     var margin = { top: 35, right: 0, bottom: 30, left: 40 };
@@ -789,40 +568,10 @@ function genBarChart(){
 
     d3.select("#dataset").text(cList);
 
-
-    ///////////////////////
-    // Bars
-    /*var bar = chart.selectAll(".bar")
-        .data(data)
-      .enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", function(d) {return x(d['Country']); })
-        .attr("y", height)
-        .attr("width", x.rangeBand())
-        .attr("height", 0);
-
-    bar.transition()
-        .duration(1500)
-        .ease("elastic")
-        .attr("y", function(d) {return parseFloat(d['Hostel']); })
-        .attr("height", function(d) {return (height/1.5) - parseFloat(d['Hostel']); })*/
-
-    ///////////////////////
   // Tooltips
   var tooltip = d3.select("body").append("div")
       .attr("class", "tooltip");
 
-  /*bar.on("mouseover", function(d) {
-        tooltip.html(d['value'])
-            .style("visibility", "visible");
-      })
-      .on("mousemove", function(d) {
-        tooltip.style("top", event.pageY - (tooltip[0][0].clientHeight + 5) + "px")
-            .style("left", event.pageX - (tooltip[0][0].clientWidth / 2.0) + "px");
-      })
-      .on("mouseout", function(d) {
-        tooltip.style("visibility", "hidden");
-      });*/
 });
 
 d3.select("#add-btn").on("click", function(e){
@@ -834,26 +583,24 @@ d3.select("#add-btn").on("click", function(e){
 });
 }
 
-function genFloatingBarSelector(selected) {
+function genFloatingBar(value) {
 
-
-      //selector.selectAll("option")
-        //            .data(selected)
-          //          .enter().append("option")
-            //        .attr("value", function(d){ return d; })
-                 //   .text(function(d){ return d; })
-}
-
-function genFloatingBar() {
   d3.csv("total_costs.csv", function(data) {
+    var country_selected;
+    for(var j = 0; j < data.length; j++) {
+      if (value == data[j].id) {
+        country_selected = data[j];
+        break;
+      }
+    }
 
     var ydata = [
-        {"filter": "accomodation", "to":data[0].average_accomodation, "from": 0},
-        {"filter": "food", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food)).toString(), "from": data[0].average_accomodation},
-        {"filter": "transportation", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation)).toString(), "from": (parseInt(data[0].average_accomodation) + parseInt(data[0].average_food)).toString()},
-        {"filter": "culture", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture)).toString(), "from": (parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation)).toString()},
-        {"filter": "alcohol", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture) + parseInt(data[0].alcohol)).toString(), "from":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture)).toString()},
-        {"filter": "shopping", "to":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture) + parseInt(data[0].alcohol) + parseInt(data[0].shopping)).toString(), "from":(parseInt(data[0].average_accomodation) + parseInt(data[0].average_food) + parseInt(data[0].average_transportation) + parseInt(data[0].culture) + parseInt(data[0].alcohol)).toString()}
+        {"filter": "accomodation", "to":country_selected.average_accomodation, "from": 0},
+        {"filter": "food", "to":(parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food)).toString(), "from": country_selected.average_accomodation},
+        {"filter": "transportation", "to":(parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food) + parseInt(country_selected.average_transportation)).toString(), "from": (parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food)).toString()},
+        {"filter": "culture", "to":(parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food) + parseInt(country_selected.average_transportation) + parseInt(country_selected.culture)).toString(), "from": (parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food) + parseInt(country_selected.average_transportation)).toString()},
+        {"filter": "alcohol", "to":(parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food) + parseInt(country_selected.average_transportation) + parseInt(country_selected.culture) + parseInt(country_selected.alcohol)).toString(), "from":(parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food) + parseInt(country_selected.average_transportation) + parseInt(country_selected.culture)).toString()},
+        {"filter": "shopping", "to":(parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food) + parseInt(country_selected.average_transportation) + parseInt(country_selected.culture) + parseInt(country_selected.alcohol) + parseInt(country_selected.shopping)).toString(), "from":(parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food) + parseInt(country_selected.average_transportation) + parseInt(country_selected.culture) + parseInt(country_selected.alcohol)).toString()}
       ]
 
     var margin = {top: 50, right: 50, bottom: 50, left: 100},
@@ -867,7 +614,7 @@ function genFloatingBar() {
         .range([0,width]);
 
     y.domain(ydata.map(function(d) { return d.filter;}));
-    x.domain([0, d3.max(data,function(d){ return d.total_average;})]);
+    x.domain([0, d3.max(ydata,function(d){ return parseInt(country_selected.average_accomodation) + parseInt(country_selected.average_food) + parseInt(country_selected.average_transportation) + parseInt(country_selected.culture) + parseInt(country_selected.alcohol) + parseInt(country_selected.shopping)})*1.05]);
 
     var xAxis = d3.svg.axis()
         .scale(x)
@@ -907,26 +654,6 @@ function genFloatingBar() {
           .attr("x", function(d) { return x(d.from); })
           .attr("width", function(d) { return x(d.to)-x(d.from) });
 
-        // add legend
-        var legend = svg.append("g")
-          .attr("class", "legendFloating")
-
-        legend
-          .append("rect")
-          .attr("x", width-margin.left)
-          .attr("y", -10)
-          .attr("width", 10)
-          .attr("height", 10)
-          .style("fill", function(d) {
-            return '#3498db';
-          })
-
-        legend
-          .append("text")
-          .attr("x", width-margin.left+15)
-          .attr("y", 0)
-          .text("New York City");
-
 
     var tooltip = d3.select("body")
     .append('div')
@@ -939,10 +666,7 @@ function genFloatingBar() {
 
     svg.selectAll(".barFloating")
     .on('mouseover', function(d) {
-
-      tooltip.select('.month').html("<b>" + d.month + "</b>");
-      tooltip.select('.tempRange').html(d.from + "&#8451; to " + d.to + "&#8451;");
-
+      tooltip.select('.month').html("<b>" + (parseInt(d.to) - parseInt(d.from)).toString() + " € </b>");
       tooltip.style('display', 'block');
       tooltip.style('opacity',2);
 
