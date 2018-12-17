@@ -474,7 +474,7 @@ if (optionValue == "Hotel"){
             270 + ")")
       .style("text-anchor", "middle")
       .attr("dy", "12")
-      .text("Euros(€)");
+      .text("Price(€)");
 
 
 
@@ -717,7 +717,7 @@ function genBarChart(selected_countries){
 
     var margin = { top: 35, right: 0, bottom: 30, left: 40 };
     var width = 500 - margin.left - margin.right;
-    var height = 500 - margin.top - margin.bottom;
+    var height = 350 - margin.top - margin.bottom;
 
 
     var chart = d3.select(".chart").append("svg")
@@ -809,11 +809,12 @@ function genBarChart(selected_countries){
 
       var margin = { top: 35, right: 0, bottom: 30, left: 40 };
       var width = 500 - margin.left - margin.right;
-      var height = 500 - margin.top - margin.bottom;
+      var height = 350 - margin.top - margin.bottom;
+
 
       var chart = d3.select(".chart").append("svg")
-          .attr("width", 960)
-          .attr("height", 500)
+          .attr("width", 500)
+          .attr("height",500)
         .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -919,8 +920,8 @@ function genFloatingBar(value) {
       ]
 
     var margin = {top: 50, right: 50, bottom: 50, left: 100},
-        width = 900 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        width = 800 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
 
     var y = d3.scale.ordinal()
         .rangeRoundBands([0, height], .08);
@@ -953,7 +954,7 @@ function genFloatingBar(value) {
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis)
           .append("text")
-          .attr("x", width-75)
+          .attr("x", width-(width+2))
           .attr("dx", ".71em")
           .attr("dy", "-.71em")
           .text("Price (€)");
@@ -1014,25 +1015,20 @@ function rightRoundedRect(x, y, width, height, radius) {
 function toggleHotelFood(optionValue) {
 
       var hotel = document.getElementById("hoteldesc");
-      var food = document.getElementById("fooddesc");
       var circleh2 = document.getElementById("circlz2");
       var circleh3 = document.getElementById("circlz3");
       var circleh4 = document.getElementById("circlz4");
       var circleh5 = document.getElementById("circlz5");
 
       if (optionValue == "Hotel") {
-
-        hotel.style.display = "block";
-        food.style.display = "none";
+        hotel.innerHTML = "Hostel&emsp;&emsp;&emsp;&emsp;&emsp;1-star&emsp;&emsp;&emsp;&emsp;&emsp;2-star&emsp;&emsp;&emsp;&emsp;&emsp;3-star&emsp;&emsp;&emsp;&emsp;&emsp;4-star&emsp;&emsp;&emsp;&emsp;&emsp;5-star";
         circleh2.style.display = "block";
         circleh3.style.display = "block";
         circleh4.style.display = "block";
         circleh5.style.display = "block";
       }
       else {
-
-        hotel.style.display = "none";
-        food.style.display = "block";
+        hotel.innerHTML = "McDonalds&emsp;&emsp;&emsp;Course Meal";
         circleh2.style.display = "none";
         circleh3.style.display = "none";
         circleh4.style.display = "none";

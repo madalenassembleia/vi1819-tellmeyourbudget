@@ -31,6 +31,7 @@ h1 {
 
 .first-row-first-column {
   width: 50%;
+  margin-left: 150px;
 }
 
 .first-row-second-column {
@@ -85,7 +86,10 @@ h1 {
 }
 
 /*---DOT PLOT---*/
-
+.dotplot{
+    margin-left: 100px;
+    margin-top: 20px;
+  }
 circle {
 	stroke-width: 1;
 }
@@ -226,7 +230,10 @@ div.text {
 
 
 /*----BAR FLOATING---*/
-
+#dropdownFloating{
+  position: absolute;
+  margin-left: 100px;
+}
 .barFloating {
   fill: #415b76;
 }
@@ -271,7 +278,10 @@ div.text {
 .barBarChart {
   fill: #415b76;
 }
-
+.chart{
+  margin-top: 50px;
+  margin-left: 20px;
+}
 .barBarChart:hover {
   fill: #7b9ba6;
 }
@@ -333,7 +343,7 @@ div.text {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    transform: translate(-610px, 30px);
+    transform: translate(60px, -617px);
 }
 
 #circlz1 {
@@ -341,7 +351,7 @@ div.text {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    transform: translate(-540px, 22px);
+    transform: translate(150px, -627px);
 }
 
 #circlz2 {
@@ -349,7 +359,7 @@ div.text {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    transform: translate(-470px, 12px);
+    transform:  translate(240px, -637px);
 }
 
 #circlz3 {
@@ -357,7 +367,7 @@ div.text {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    transform: translate(-400px, 0px);
+    transform:  translate(330px, -647px);
 }
 
 #circlz4 {
@@ -365,7 +375,7 @@ div.text {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    transform: translate(-340px, -10px);
+    transform:   translate(420px, -657px);
 }
 
 #circlz5 {
@@ -373,18 +383,14 @@ div.text {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    transform: translate(-270px, -20px);
+    transform: translate(510px, -667px);
 }
 
 
 #hoteldesc{
-  transform: translate(67px, 42px);
-  font: 12px sans-serif;
-  color: black;
-}
-
-#fooddesc{
-  transform: translate(67px, 42px);
+  width:500px;
+  height: 20px;
+  transform: translate(77px, -600px);
   font: 12px sans-serif;
   color: black;
 }
