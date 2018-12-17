@@ -1,6 +1,6 @@
-Country,Hostel,Entertainment,Half Liter of Beer,McDonalds Meal,Public Transportation per Day,Shopping at a Chain Store,Hostel+Entertainment,Hostel+Beer,Hostel+McDonalds,Hostel+Transportation,Hostel+Shopping,Entertainment+Beer,Entertainment+Mcdonalds,Entertainment+Transportation,Entertainment+Shopping,Beer+McDonalds,Beer+Transportation,Beer+Shopping,McDonalds+Transportation,McDonalds+Shopping,Trasportation+Shopping
-"Thailand","13,79","16,09","2,07","5,29","1,38","44,19","29,89","15,86","19,08","15,17","57,98","18,16","21,38","17,47","60,28","7,36","3,45","46,26","6,67","49,47","45,57"
-"Portugal","19,54","13,79","2,30","8,62","4,60","49,53","33,33","21,84","28,16","24,14","69,08","16,09","22,41","18,39","63,33","10,92","6,90","51,83","13,22","58,16","54,13"
-"Hong Kong","24,14","0,00","4,48","4,48","2,30","54,42","24,14","28,62","28,62","26,44","78,56","4,48","4,48","2,30","54,42","8,97","6,78","58,90","6,78","58,90","56,72"
-"Netherlands","36,78","17,24","6,32","11,03","8,05","60,00","54,02","43,10","47,82","44,83","96,78","23,56","28,28","25,29","77,24","17,36","14,37","66,32","19,08","71,03","68,05"
-"United States","48,28","48,28","3,79","6,90","4,60","42,09","96,55","52,07","55,17","52,87","90,37","52,07","55,17","52,87","90,37","10,69","8,39","45,89","11,49","48,99","46,69"
+id,Country,accomodation_5,accomodation_4,accomodation_3,accomodation_2,accomodation_1,accomodation,food_expensive,food,alcohol,culture,transportation,transportation_taxi,shopping,average_accomodation,average_food,average_transportation,average_food_x2,total_average,total_expensive,total_cheap
+BEL,Belgium,228.74,133.33,114.94,88.51,68.97,27.59,47.07,11.72,05.06,11.49,6.21,18.62,73.6,110.35,29.4,12.42,58.79,237.74,384.58,135.67
+PRT,Portugal,87.36,81.61,50.57,45.98,40.23,19.54,23.56,8.62,2.3,13.79,4.6,4.83,49.53,54.22,16.09,4.72,32.18,133.98,181.37,98.38
+ZAF,South Africa,327.59,244.83,117.24,91.95,66.67,19.54,18.62,4.83,1.84,12.64,2.76,6.21,40.81,144.64,11.73,4.49,23.45,213.38,407.71,82.42
+POL,Poland,85.06,60.92,54.02,43.68,39.08,18.39,16.9,5.98,2.3,11.26,2.3,5.52,51.63,50.19,11.44,3.91,22.88,127.11,172.67,91.86
+ESP,Spain,188.51,82.76,50.57,49.43,47.13,19.54,31.38,10.23,3.1,19.54,4.6,9.66,46.86,72.99,20.81,7.13,41.61,163.88,299.05,103.87

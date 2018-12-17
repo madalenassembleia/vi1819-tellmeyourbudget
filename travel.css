@@ -380,6 +380,9 @@ div.text {
 .axisBarChart text {
   font: 10px sans-serif;
 }
+.y.axisBarChart text{
+  display: none;
+}
 
 .axisBarChart path,
 .axisBarChart line {
