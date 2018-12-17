@@ -157,21 +157,22 @@ var optionValue = "Hotel";
 
 function genDotPlot(selectedCountries,selectorDot){
 
-  console.log(selectedCountries)
 
   var fullwidth = 700, fullheight = 400;
   var margin = {top: 20, right: 25, bottom: 20, left: 200};
   var width = 1000 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-  margin.left = margin.left - 90;
+  margin.left = margin.left - 130;
 
   d3.csv("accommodation_food_costs.csv", function(error, data) {
 
+  var newList = [];
   var options = ["Hotel", "Food"];
+  toggleHotelFood(optionValue);
+
 
   //Filter
-  console.log(Object.keys(data[0]))
 	var elements = Object.keys(data[0]).filter(function(d){
         if (optionValue == "Hotel"){
           return ((d != "id") &&(d!="Country") &&(d!="food") && (d!="food_expensive"));
@@ -181,19 +182,13 @@ function genDotPlot(selectedCountries,selectorDot){
         }
 		});
 
-var newList = [];
-console.log("Selected Countries:", selectedCountries)
 
 if (selectedCountries.length == 0){
-  console.log("sim")
   for (var i = 0; i < 5; i++){
         newList.push(data[i]);
   }
 }
 else{
-  console.log("Data:", data)
-  console.log("new List: ", newList)
-
   for (var i = 0; i < data.length; i++){
     for (var j = 0; j < selectedCountries.length; j ++){
       if (data[i].id == selectedCountries[j]){
@@ -202,21 +197,6 @@ else{
     }
   }
 }
-
-console.log("new List updated: ", newList)
-
-  /*  console.log(subtitles)
-    subtitles.fitler(function(d){
-      if (optionValue == "Hotel"){
-        return ((d != "McDonalds") &&(d!="2-Course Meal"));
-      }
-      else{
-        return ((d!="1-star") && (d != "2-star")  &&(d!="3-star") && (d != "4-star")&& (d != "5-star"));
-      }
-    })*/
-
-    console.log("elements: ", elements)
-    var selection = elements[0];
 
  //scales
   var widthScale = d3.scale.linear()
@@ -248,45 +228,8 @@ console.log("new List updated: ", newList)
     });
 
     var max = d3.max(newList, d => d[elements[elements.length - 1]]*1);
-    widthScale.domain([0, max*1.3]);
+    widthScale.domain([0, max*1.1]);
     heightScale.domain(newList.map(function(d) { return d.Country; } ));
-
-
-  var legendX = 200,
-    legendY = 320,
-    spaceBetween = 70,
-    titleOffset = -120;
-
-    // code for positioning legend
-    var legend = svg.append("g")
-      .attr("transform", "translate(" + [legendX, legendY] + ")");
-
-    legend.append("g")
-      .attr("class", "title")
-      .append("text")
-      .attr("x", titleOffset)
-      .text("Description")
-
-      legend.selectAll("circle")
-    	.data(newList)
-    .enter().append("circle")
-    	.attr("cx", function(d, i) {
-      	return spaceBetween * i;
-    	})
-    	.attr("cy", -4)
-    	.attr("r", 5)
-    	.attr("class", function(d) { });
-/*
-    // add labels
-    legend.append("g")
-      .selectAll("text")
-    	.data(legendLabels)
-    .enter().append("text")
-      .attr("x", function(d, i) {
-      	return spaceBetween * i + 10;
-    	})
-    	.text(function(d) { return d.label });
-*/
 
     // Make the faint lines from y labels to highest dot
     var linesGrid = svg.selectAll("lines.grid")
@@ -517,7 +460,7 @@ if (optionValue == "Hotel"){
 
     svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(" + margin.left + "," + height + ")")
+      .attr("transform", "translate(" + margin.left + "," + (height/2 + 60) + ")")
       .call(xAxis);
 
     svg.append("g")
@@ -527,22 +470,18 @@ if (optionValue == "Hotel"){
 
     svg.append("text")
       .attr("class", "xlabel")
-      .attr("transform", "translate(" + (margin.left + width / 2) + " ," +
-            (height + margin.bottom ) + ")")
+      .attr("transform", "translate(" + (width - (margin.left*2)) + " ," +
+            270 + ")")
       .style("text-anchor", "middle")
       .attr("dy", "12")
-      .text("Percent");
+      .text("Euros(€)");
 
 
 
       //Update dot plot
      selectorDot.on("change", function(d){
       optionValue = (document.getElementById("dropdown")).value;
-      console.log(optionValue)
 
-
-
-      console.log("New Elements: ", elements)
       elements = Object.keys(data[0]).filter(function(d){
             if (optionValue == "Hotel"){
               return ((d != "id") &&(d!="Country") &&(d!="food") && (d!="food_expensive"));
@@ -551,13 +490,15 @@ if (optionValue == "Hotel"){
               return ((d != "id") && (d != "region")  &&(d!="Country") && (d != "accomodation")&& (d != "accomodation_1")&& (d != "accomodation_2")&& (d != "accomodation_3") && (d != "accomodation_4")  &&(d!="accomodation_5")); //inc
             }
     		});
-
+        toggleHotelFood(optionValue);
 
       max = d3.max(newList, d => d[elements[elements.length - 1]]*1);
-      console.log(" new max", max)
-
-      widthScale.domain([0, max*1.3]); //mudar valor
+      widthScale.domain([0, max*1.1]); //mudar valor
       xAxis.scale(widthScale);
+
+      newList.sort(function(a, b) {
+        return d3.descending(+a[elements[elements.length - 1]], +b[elements[elements.length - 1]]);
+      });
 
         d3.selectAll("line.grid")
             .attr("x1", margin.left)
@@ -593,6 +534,7 @@ if (optionValue == "Hotel"){
       //heightScale.domain(data.map(function(d) { return d.Country; } ));
       //yAxis.scale(heightScale);
 
+
       d3.selectAll("circle.hostel")
         .transition()
         .attr("cx", function(d) {
@@ -603,13 +545,8 @@ if (optionValue == "Hotel"){
           return heightScale(d.Country) + heightScale.rangeBand()/4;
         })
         .text(function(d) {
-                console.log("Novo texto: ", d[elements[0]] )
                 return d[elements[0]] + "€";
         });
-
-        d3.selectAll("g.y.axis")
-          .transition()
-          .call(yAxis);
 
         d3.selectAll("circle.h1star")
           .transition()
@@ -628,10 +565,9 @@ if (optionValue == "Hotel"){
           .transition()
           .call(yAxis);
 
-  console.log("Updated value: ", optionValue)
 
-  if (optionValue == "Hotel"){
-
+if (optionValue == "Hotel"){
+      console.log("update para hotel")
       d3.selectAll("circle.h2star")
         .transition()
         .attr("cx", function(d) {
@@ -644,11 +580,6 @@ if (optionValue == "Hotel"){
         .text(function(d) {
                 return d[elements[2]] + "€";
               });
-
-        d3.selectAll("g.y.axis")
-          .transition()
-          .call(yAxis);
-
 
         d3.selectAll("circle.h3star")
           .transition()
@@ -663,9 +594,6 @@ if (optionValue == "Hotel"){
                   return d[elements[3]] + "€";
                 });
 
-        d3.selectAll("g.y.axis")
-          .transition()
-          .call(yAxis);
 
           d3.selectAll("circle.h4star")
             .transition()
@@ -680,9 +608,6 @@ if (optionValue == "Hotel"){
                     return d[elements[4]] + "€";
                   });
 
-          d3.selectAll("g.y.axis")
-            .transition()
-            .call(yAxis);
 
 
           d3.selectAll("circle.h5star")
@@ -705,7 +630,7 @@ if (optionValue == "Hotel"){
 
 
 else{
-
+    console.log("update para food")
     d3.selectAll("circle.h2star")
       .transition()
       .attr("cx", function(d) {
@@ -718,11 +643,6 @@ else{
       .text(function(d) {
               return d[elements[2]] + "€";
             });;
-
-      d3.selectAll("g.y.axis")
-        .transition()
-        .call(yAxis);
-
 
       d3.selectAll("circle.h3star")
         .transition()
@@ -753,11 +673,6 @@ else{
           .text(function(d) {
                   return d[elements[4]] + "€";
                 });;
-
-        d3.selectAll("g.y.axis")
-          .transition()
-          .call(yAxis);
-
 
         d3.selectAll("circle.h5star")
           .transition()
@@ -794,6 +709,8 @@ else{
 function genBarChart(selected_countries){
   console.log("selected_countries", selected_countries.length);
 
+  toggleHotelFood(optionValue);
+
   if (selected_countries.length == 0) {
     console.log("==0");
     d3.csv("default_5_barChart.csv", function(data) {
@@ -801,14 +718,14 @@ function genBarChart(selected_countries){
     var margin = { top: 35, right: 0, bottom: 30, left: 40 };
     var width = 500 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
-    
+
 
     var chart = d3.select(".chart").append("svg")
-        .attr("width", 960)
-        .attr("height", 500)
+        .attr("width", 500)
+        .attr("height",500)
       .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-        
+
     ///////////////////////
     // Scales
     var x = d3.scale.ordinal()
@@ -902,21 +819,21 @@ function genBarChart(selected_countries){
       var margin = { top: 35, right: 0, bottom: 30, left: 40 };
       var width = 500 - margin.left - margin.right;
       var height = 500 - margin.top - margin.bottom;
-      
+
       var chart = d3.select(".chart").append("svg")
           .attr("width", 960)
           .attr("height", 500)
         .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-          
+
       ///////////////////////
       // Scales
       var x = d3.scale.ordinal()
-          .domain(total_costs.map(function(d) {debugger; return d['Country']; }))
+          .domain(total_costs.map(function(d) { return d['Country']; }))
           .rangeRoundBands([0, width], .1);
 
       var y = d3.scale.linear()
-          .domain([0, d3.max(total_costs, function(d) {debugger; return d['total_average']; }) * 1.1])
+          .domain([0, d3.max(total_costs, function(d) {return d['total_average']; }) * 1.1])
           .range([height, 0]);
 
       ///////////////////////
@@ -988,7 +905,7 @@ function genBarChart(selected_countries){
 
 
 
-  
+
 
 /*
 /*
@@ -1227,4 +1144,46 @@ function genFloatingBar(value) {
       tooltip.style('opacity',0);
     });
   });
+}
+
+
+function rightRoundedRect(x, y, width, height, radius) {
+  return "M" + x + "," + y
+       + "h" + (width - radius)
+       + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
+       + "v" + (height - 2 * radius)
+       + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
+       + "h" + (radius - width)
+       + "z";
+}
+
+
+function toggleHotelFood(optionValue) {
+
+      var hotel = document.getElementById("hoteldesc");
+      var food = document.getElementById("fooddesc");
+      var circleh2 = document.getElementById("circlz2");
+      var circleh3 = document.getElementById("circlz3");
+      var circleh4 = document.getElementById("circlz4");
+      var circleh5 = document.getElementById("circlz5");
+
+      if (optionValue == "Hotel") {
+
+        hotel.style.display = "block";
+        food.style.display = "none";
+        circleh2.style.display = "block";
+        circleh3.style.display = "block";
+        circleh4.style.display = "block";
+        circleh5.style.display = "block";
+      }
+      else {
+
+        hotel.style.display = "none";
+        food.style.display = "block";
+        circleh2.style.display = "none";
+        circleh3.style.display = "none";
+        circleh4.style.display = "none";
+        circleh5.style.display = "none";
+
+      }
 }
