@@ -145,7 +145,7 @@ $(document).ready(function () {
   genBarChart(selected_countries);
 
   genDotPlot();
-  genFloatingBar("PRT");
+  genFloatingBar("ARG");
 
   genDotPlot(selected_countries,selectorDot);
   genFloatingBar();
@@ -492,9 +492,14 @@ if (optionValue == "Hotel"){
     		});
         toggleHotelFood(optionValue);
 
+      console.log("max", max)
       max = d3.max(newList, d => d[elements[elements.length - 1]]*1);
       widthScale.domain([0, max*1.1]); //mudar valor
       xAxis.scale(widthScale);
+      d3.selectAll("g.x.axis")
+          .transition()
+          .call(xAxis);
+      console.log(" new max", max)
 
       newList.sort(function(a, b) {
         return d3.descending(+a[elements[elements.length - 1]], +b[elements[elements.length - 1]]);
@@ -984,7 +989,7 @@ function genFloatingBar(value) {
 
     svg.selectAll(".barFloating")
     .on('mouseover', function(d) {
-      tooltip.select('.month').html("<b>" + (parseInt(d.to) - parseInt(d.from)).toString() + " € </b>");
+      tooltip.select('.month').html((parseInt(d.to) - parseInt(d.from)).toString() + " € ");
       tooltip.style('display', 'block');
       tooltip.style('opacity',2);
 
@@ -1001,16 +1006,6 @@ function genFloatingBar(value) {
 }
 
 
-function rightRoundedRect(x, y, width, height, radius) {
-  return "M" + x + "," + y
-       + "h" + (width - radius)
-       + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
-       + "v" + (height - 2 * radius)
-       + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
-       + "h" + (radius - width)
-       + "z";
-}
-
 
 function toggleHotelFood(optionValue) {
 
@@ -1021,14 +1016,14 @@ function toggleHotelFood(optionValue) {
       var circleh5 = document.getElementById("circlz5");
 
       if (optionValue == "Hotel") {
-        hotel.innerHTML = "Hostel&emsp;&emsp;&emsp;&emsp;&emsp;1-star&emsp;&emsp;&emsp;&emsp;&emsp;2-star&emsp;&emsp;&emsp;&emsp;&emsp;3-star&emsp;&emsp;&emsp;&emsp;&emsp;4-star&emsp;&emsp;&emsp;&emsp;&emsp;5-star";
+        hotel.innerHTML = "Hostel&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;1-star&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;2-star&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;3-star&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;4-star&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;5-star";
         circleh2.style.display = "block";
         circleh3.style.display = "block";
         circleh4.style.display = "block";
         circleh5.style.display = "block";
       }
       else {
-        hotel.innerHTML = "McDonalds&emsp;&emsp;&emsp;Course Meal";
+        hotel.innerHTML = "McDonalds&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Course Meal";
         circleh2.style.display = "none";
         circleh3.style.display = "none";
         circleh4.style.display = "none";
